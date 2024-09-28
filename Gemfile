@@ -2,15 +2,13 @@
 
 source 'https://rubygems.org'
 
-gem 'rspec'
-gem 'chunky_png'
-gem 'selenium-webdriver'
 gem 'appium_lib'
-gem 'pry'
+gem 'appium_lib_core'
+gem 'base64'
+gem 'chunky_png'
+gem 'faker'
 gem 'json'
 gem 'pp'
-gem 'faker'
-gem 'chunky_png'
-gem 'base64'
-gem 'appium_lib_core'
-
+gem 'pry'
+gem 'rspec'
+gem 'selenium-webdriver'
