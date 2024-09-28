@@ -1,7 +1,101 @@
 class LoginPage
-
-  def giris_yap_click 
-    giris_yap=driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")')
+  def giris_yap_click
+    giris_yap = driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")')
     giris_yap.click
+  end
+
+  def giris_sayfasini_bekle
+    wait = Selenium::WebDriver::Wait.new(timeout: 10) # 10 saniye
+    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")') }
+  end
+
+  def sifremi_unuttum_sayfasini_bekle
+    wait = Selenium::WebDriver::Wait.new(timeout: 10) # 10 saniye
+    wait.until {driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")') }
+  end
+
+  def sifremi_unuttum_click
+    sifremi_unuttum = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")')
+    sifremi_unuttum.click
+  end
+
+  def telefon_numarasini_gir
+    telefon = driver.find_element(:uiautomator, 'new UiSelector().text("Cep Telefonu")')
+    telefon.send_keys('5419539727')
+  end
+
+  def kodu_gonder_click
+    kodu_gonder = driver.find_element(:uiautomator, 'new UiSelector().text("Kodu Gönder")')
+    kodu_gonder.click
+  end
+
+  def dogrulama_kodunu_al(sms_body)
+    return unless sms_body && sms_body =~ /(\d{4})/
+
+    verification_code = Regexp.last_match(0)
+    puts "Dogrulama kodu: #{verification_code}"
+    @verification_code = verification_code # Sınıf değişkenine atama
+    verification_code # Fonksiyonun geri döndürdüğü değer
+  end
+
+  def dogrulama_kodunu_gonder(verification_code)
+    driver.find_element(:class_name, 'android.widget.EditText').send_keys(verification_code)
+  end
+
+  def dogrulaya_tiklat
+    wait = Selenium::WebDriver::Wait.new(timeout: 15) # 10 saniye
+    wait.until {driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")') }
+    dogrula = driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")')
+    dogrula.click
+  end
+
+  def rastgele_sifre_olustur
+    sifre = Faker::Internet.password(min_length: 8)
+  end
+
+  def sifre_alanina_rastgele_sifre_gir(sifre)
+    # Şifre alanına rastgele oluşturulan şifreyi gönder
+    sifre_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
+    sifre_input.send_keys(sifre)
+  end
+
+  def sifre_alanina_girdigin_ayni_sifreyi_gir(sifre)
+    # Şifreyi onaylamak için aynı şifreyi gönder
+    sifre_onay_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifreyi Onayla")')
+    sifre_onay_input.send_keys(sifre)
+  end
+
+  def sifreyi_kaydet_butonuna_tikla
+    # Şifreyi kaydet butonuna tıkla
+    sifreyi_kaydet_button = driver.find_element(:uiautomator, 'new UiSelector().text("Şifreyi Kaydet")')
+    sifreyi_kaydet_button.click
+  end
+
+  def gelen_mesajlari_al
+    sms_output = `adb shell content query --uri content://sms/inbox --projection address,body,date --sort "date" --where "1=1"`
+    # puts "Latest SMS Output:\n#{sms_output}"
+
+    latest_sms = nil
+
+    if sms_output.empty?
+      puts 'No messages found.'
+      return nil
+    else
+      sms_lines = sms_output.lines
+      if sms_lines.any?
+        # Son satırı al ve ayrıştır
+        first_line = sms_lines.last
+        if first_line =~ /address=(.*?), body=(.*?), date=(.*)/
+          sender = Regexp.last_match(1)
+          body = Regexp.last_match(2)
+          latest_sms = { sender: sender, body: body }
+          puts "Sender: #{sender}, Message: #{body}"
+
+          return body # Body değerini döndür
+        end
+      end
+    end
+
+    nil
   end
 end

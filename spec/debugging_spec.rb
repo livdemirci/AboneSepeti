@@ -19,7 +19,7 @@ describe "DEBUG" do
   end
 
   it "Debugging" do
-    element = driver.find_element(:uiautomator, 'new UiSelector().text("Giriþ Yap")')
-    element.click
+    dogrula = driver.find_element(:uiautomator, 'new UiSelector().text("DoÄŸrula")')
+    dogrula.click
   end
 end
