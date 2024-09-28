@@ -1,3 +1,5 @@
+require 'bundler/setup'
+Bundler.require(:default)
 require 'rspec'
 require 'selenium-webdriver'
 require 'appium_lib'
