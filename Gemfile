@@ -10,3 +10,7 @@ gem 'pry'
 gem 'json'
 gem 'pp'
 gem 'faker'
+gem 'chunky_png'
+gem 'base64'
+gem 'appium_lib_core'
+
