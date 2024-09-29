@@ -72,7 +72,8 @@ class LoginPage
   end
 
   def gelen_mesajlari_al
-    sms_output = `adb shell content query --uri content://sms/inbox --projection address,body,date --sort "date" --where "1=1"`
+    sms_output= `adb shell am broadcast -a io.appium.settings.sms.read --es max 10`
+    # sms_output = `adb shell content query --uri content://sms/inbox --projection address,body,date --sort "date" --where "1=1"`
     # puts "Latest SMS Output:\n#{sms_output}"
 
     latest_sms = nil
@@ -97,5 +98,26 @@ class LoginPage
     end
 
     nil
+  end
+
+  def wait_for_otp(otp_pattern, timeout)
+    start_time = Time.now
+    
+    while Time.now - start_time <= timeout
+      # SMS verilerini çek
+      data = driver.execute_script('mobile: listSms', { max: 1 }).to_s
+      
+      # OTP desenini regex ile eşleştir
+      matcher = Regexp.new(otp_pattern).match(data)
+      
+      if matcher
+        return matcher[1] # Eşleşen ilk grup (1. grup)
+      end
+      
+      # Belirli bir süre bekle (polling)
+      sleep(1)
+    end
+    
+    nil # OTP bulunamazsa
   end
 end
