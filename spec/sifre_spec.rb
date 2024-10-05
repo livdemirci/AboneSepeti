@@ -3,7 +3,7 @@ Bundler.require(:default)
 require 'rspec'
 require 'selenium-webdriver'
 require 'appium_lib'
-# require 'pry'
+require 'pry'
 require 'pp'
 require 'json'
 require 'faker'
@@ -12,7 +12,6 @@ require 'base64'
 require 'spec_helper'
 require_relative '../screenshot_helper'
 require 'rspec'
-
 
 load File.dirname(__FILE__) + '/../test_helper.rb'
 
@@ -52,32 +51,28 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     login_page = LoginPage.new
 
     login_page.giris_sayfasini_bekle
-    path = 'C:\\AboneSepeti\\referance_image\\original.png'
-
-    compare_screenshot_with_reference(path, 0.9)
-    compare_screenshot_match_images(path)
+    
     login_page.giris_yap_click
 
     login_page.sifremi_unuttum_sayfasini_bekle
 
     login_page.sifremi_unuttum_click
 
+    sleep 2 # ekranin gelmesi icin
+
     login_page.telefon_numarasini_gir
 
-    sleep 2 # ekranin gelmesi icin
+    sleep 2 # numaranin girilmesi icin
 
     login_page.kodu_gonder_click
 
-    sleep 12 # kodun gelmesi icin
+    sleep 10 # kodun gelmesi icin
 
-    sms_body = login_page.gelen_mesajlari_al # son gelen smsleri al
+    otp_pattern = /Dogrulama kodunuz:\s*(\d{4})/
 
-    sleep 10 # mesajlarin yuklenmesi icin
-
-    verification_code = login_page.dogrulama_kodunu_al(sms_body)
-
-    sleep 4 # regexp islemi icin
-
+    verification_code = login_page.wait_for_otp(otp_pattern, TIMEOUT = 10)
+    puts verification_code
+    
     login_page.dogrulama_kodunu_gonder(verification_code)
 
     login_page.dogrulaya_tiklat
@@ -91,6 +86,24 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     login_page.sifre_alanina_girdigin_ayni_sifreyi_gir(sifre)
 
     login_page.sifreyi_kaydet_butonuna_tikla
+
+    sleep 2 # sifrenin kaydedilmesi icin
+
+    login_page.telefon_numarasini_gir
+
+    login_page.sifre_alanina_rastgele_sifre_gir(sifre)
+
+    login_page.giris_yap_click
+
+    mainPage = MainPage.new
+
+    mainPage.profil_sayfasini_bekle
+
+    mainPage.profil_click
+
+    path = 'C:\AboneSepeti\referance_image\profilresmi.png'
+
+    assert_partial_image_found(path, 0.9)
   end
 end
 
