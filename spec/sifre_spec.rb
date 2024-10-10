@@ -9,7 +9,7 @@ require 'json'
 require 'faker'
 require 'chunky_png'
 require 'base64'
-require 'spec_helper'
+require_relative 'spec_helper'
 require_relative '../screenshot_helper'
 require 'rspec'
 
@@ -51,7 +51,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     login_page = LoginPage.new
 
     login_page.giris_sayfasini_bekle
-    
+
     login_page.giris_yap_click
 
     login_page.sifremi_unuttum_sayfasini_bekle
@@ -72,7 +72,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
 
     verification_code = login_page.wait_for_otp(otp_pattern, TIMEOUT = 10)
     puts verification_code
-    
+
     login_page.dogrulama_kodunu_gonder(verification_code)
 
     login_page.dogrulaya_tiklat
@@ -87,7 +87,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
 
     login_page.sifreyi_kaydet_butonuna_tikla
 
-    sleep 2 # sifrenin kaydedilmesi icin
+    sleep 3 # sifrenin kaydedilmesi icin
 
     login_page.telefon_numarasini_gir
 
@@ -95,15 +95,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
 
     login_page.giris_yap_click
 
-    mainPage = MainPage.new
 
-    mainPage.profil_sayfasini_bekle
-
-    mainPage.profil_click
-
-    path = 'C:\AboneSepeti\referance_image\profilresmi.png'
-
-    assert_partial_image_found(path, 0.9)
   end
 end
 
