@@ -26,6 +26,8 @@ GEM
     method_source (1.1.0)
     nokogiri (1.16.7-x64-mingw-ucrt)
       racc (~> 1.4)
+    nokogiri (1.16.7-x86_64-linux)
+      racc (~> 1.4)
     pp (0.4.0)
       prettyprint
     prettyprint (0.1.1)
@@ -62,6 +64,7 @@ GEM
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   appium_lib
@@ -76,4 +79,4 @@ DEPENDENCIES
   selenium-webdriver
 
 BUNDLED WITH
-   2.5.19
+   2.4.19
