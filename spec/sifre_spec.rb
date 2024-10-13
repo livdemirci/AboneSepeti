@@ -108,7 +108,6 @@ end
 #             else
 #               '/mnt/c/Windows/System32/cmd.exe /c ipconfig'
 #             end
-
 #   ipconfig_output = `#{command}`
 #   ip_line = ipconfig_output.lines.find { |line| line.include?('vEthernet (WSL (Hyper-V firewall))') }
 

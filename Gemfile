@@ -12,4 +12,9 @@ gem 'pp'
 gem 'pry'
 gem 'rspec'
 gem 'selenium-webdriver'
+gem 'rake'
+gem 'ci_reporter_rspec', '~> 1.0'
+# Diğer gem'lerinizi listeleyin
+gem 'httpclient'
+
 # gemfile
