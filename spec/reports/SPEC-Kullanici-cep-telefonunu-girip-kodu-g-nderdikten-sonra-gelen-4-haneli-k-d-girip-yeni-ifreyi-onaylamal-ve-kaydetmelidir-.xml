@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir." tests="1" time="41.93434375900142" failures="0" errors="0" skipped="0" timestamp="2024-10-13T15:01:59+03:00">
-  <testcase name="Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir. Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli kodu girip yeni şifreyi onaylamalı ve kaydetmeli." time="36.18166059599935">
+<testsuite name="Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir." tests="1" time="24.425254171001143" failures="0" errors="0" skipped="0" timestamp="2024-10-22T23:10:59+03:00">
+  <testcase>
   </testcase>
-  <system-out>
-1541
-  </system-out>
 </testsuite>

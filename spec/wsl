@@ -1,0 +1,99 @@
+# ////////////////////////////////////////////////////////////////////////////////////
+
+# def get_wsl_ip
+#   os = RbConfig::CONFIG['host_os']
+#   command = if os =~ /mingw|mswin|cygwin/
+#               'ipconfig'
+#             else
+#               '/mnt/c/Windows/System32/cmd.exe /c ipconfig'
+#             end
+#   ipconfig_output = `#{command}`
+#   ip_line = ipconfig_output.lines.find { |line| line.include?('vEthernet (WSL (Hyper-V firewall))') }
+
+#   if ip_line.nil?
+#     puts 'WSL IP Address not found. Using default IP: http://127.0.0.1'
+#     return '127.0.0.1'
+#   end
+
+#   ip_line_index = ipconfig_output.lines.index(ip_line)
+#   if ip_line_index.nil? || ipconfig_output.lines[ip_line_index + 4].nil?
+#     puts 'WSL IP Address not found. Using default IP: http://127.0.0.1'
+#     return '127.0.0.1'
+#   end
+
+#   ip_address_line = ipconfig_output.lines[ip_line_index + 4]
+#   ip_address = ip_address_line.split(':').last.strip
+
+#   if ip_address.match(/\A\d{1,3}(\.\d{1,3}){3}\z/)
+#     ip_address
+#   else
+#     puts 'WSL IP Address not found. Using default IP: http://127.0.0.1'
+#     '127.0.0.1'
+#   end
+# end
+
+# def get_device_info
+#   device_name = nil
+#   platform_version = nil
+
+#   # ADB ile bağlı cihazları al
+#   adb_devices_output = `adb devices` # ADB komutunu çalıştır
+#   puts "ADB devices output:\n#{adb_devices_output}" # adb cihazlarının çıktısını yazdır
+
+#   device_line = adb_devices_output.lines.find { |line| line.include?('device') && !line.include?('List of devices') }
+
+#   if device_line
+#     puts "Device Line: #{device_line}" # Burada device_line yazdırılıyor
+#     device_name = device_line.split("\t").first
+#     puts "Device Name: #{device_name}" # Cihaz adını yazdır
+
+#     # Cihazın Android sürümünü bul
+#     platform_version = `adb -s #{device_name} shell getprop ro.build.version.release`.strip
+#     puts "Platform Version: #{platform_version}" # Android sürümünü yazdır
+#   else
+#     puts 'No devices found.'
+#   end
+
+#   { device_name: device_name, platform_version: platform_version }
+# end
+
+# def adb_command(command)
+#   `adb #{command}`
+# end
+
+# def swipe_up(driver, start_x, start_y, end_x, end_y, _duration = 250)
+#   driver.action
+#         .move_to_location(start_x, start_y).pointer_down(:left)
+#         .move_to_location(end_x, end_y)
+#         .release.perform
+# end
+
+# # Bildirimleri aç
+# driver.execute_script('mobile: openNotifications')
+
+# sleep 1
+
+# # Bildirim öğelerini al
+# notifications = driver.find_elements(:id, 'android:id/status_bar_latest_event_content')
+
+# # Son bildirim öğesini al
+# last_notification = notifications.last
+
+# # Son bildirimin metin içeriğini al
+# notification_text_element = last_notification.find_element(:id, 'android:id/message_text')
+
+# notification_text = notification_text_element.text
+# puts "Son gelen bildirimin metni: #{notification_text}"
+
+# if notification_text =~ /(\d{4})/
+#   verification_code = Regexp.last_match(1)
+#   puts "4 haneli doğrulama kodu: #{verification_code}"
+# end
+
+# driver.navigate.back
+# sleep 2
+# driver.find_element(:class_name, 'android.widget.EditText').send_keys(verification_code)
+
+# dogrula = driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")')
+# dogrula.click
+# sleep 4
