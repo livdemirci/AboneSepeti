@@ -108,7 +108,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     profil_page.surum_yenilik_uyarisini_kapat
 
 
-    
+
     profil_page.profil_butonuna_tikla
 
     profil_page.ayarlar_butonuna_tikla
@@ -119,6 +119,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     profil_page.kaydet_butonuna_tikla
 
     profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
+    
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
     driver.quit_driver
