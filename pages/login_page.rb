@@ -1,3 +1,4 @@
+
 class LoginPage
   def giris_yap_click
     giris_yap = driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")')
@@ -102,22 +103,22 @@ class LoginPage
 
   def wait_for_otp(otp_pattern, timeout)
     start_time = Time.now
-    
+
     while Time.now - start_time <= timeout
       # SMS verilerini çek
       data = driver.execute_script('mobile: listSms', { max: 1 }).to_s
-      
+
       # OTP desenini regex ile eşleştir
       matcher = Regexp.new(otp_pattern).match(data)
-      
+
       if matcher
         return matcher[1] # Eşleşen ilk grup (1. grup)
       end
-      
+
       # Belirli bir süre bekle (polling)
       sleep(1)
     end
-    
+
     nil # OTP bulunamazsa
   end
 end

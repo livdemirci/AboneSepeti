@@ -1,12 +1,10 @@
 # frozen_string_literal: true
-Dir["#{File.dirname(__FILE__)}/pages/*_page.rb"].each { |file| load file } # Load all page objects
 
 BASE_DIR = File.expand_path('..', __dir__)
-require "#{BASE_DIR}/test_helper"
-# require "#{BASE_DIR}/pages/abstract_page"
-# require "#{BASE_DIR}/pages/login_page"
-# require "#{BASE_DIR}/pages/profil_page"
-require "#{BASE_DIR}/agileway_utils"
+
+Dir["#{File.dirname(__FILE__)}/pages/*_page.rb"].each { |file| load file }
+require_relative './test_helper'
+require_relative './agileway_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -18,15 +16,10 @@ require 'faker'
 require 'chunky_png'
 require 'base64'
 
-describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
+describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   include TestHelper
   include AgilewayUtils
   before(:all) do
-    # device_info = get_device_info
-    # @device_name = device_info[:device_name] # Cihaz adını al
-    # @wsl_ip = get_wsl_ip
-    # puts @wsl_ip ? "WSL IP Address: #{@wsl_ip}" : 'WSL IP Address not found or incorrect format.'
-
     @caps = {
       caps: {
         platformName: 'Android',
@@ -82,7 +75,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
 
     sifre = login_page.rastgele_sifre_olustur
 
-    sleep 1 # sifre olusturulmasi icin
+    sleep 2 # sifre olusturulmasi icin
 
     login_page.sifre_alanina_rastgele_sifre_gir(sifre)
 
@@ -110,6 +103,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     profil_page.kaydet_butonuna_tikla
 
     profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
+    expect(profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular).to eq('Şifreniz başarıyla değiştirilmiştir.')
 
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
