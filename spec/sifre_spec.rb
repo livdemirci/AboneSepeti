@@ -6,8 +6,6 @@ Dir["#{BASE_DIR}/pages/*_page.rb"].each do |file|
   puts "Loading file: #{file}"
   load file
 end
-
-
 require_relative '../test_helper'
 require_relative '../agileway_utils'
 require 'bundler/setup'
@@ -39,7 +37,9 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
       }
     }
     @driver = Appium::Driver.new(@caps, true).start_driver
+    #@driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
     Appium.promote_appium_methods Object
+
   end
 
   after(:all) do
@@ -99,9 +99,10 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     profil_page.surum_yenilik_uyarisini_kapat
 
     profil_page.profil_butonuna_tikla
-
+    
     profil_page.ayarlar_butonuna_tikla
     profil_page.sifremi_degistir_click
+
     profil_page.mevcut_sifre_gir(sifre)
     profil_page.baslangic_sifresini_gir
     profil_page.baslangic_sifre_dogrulama_gir

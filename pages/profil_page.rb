@@ -2,27 +2,27 @@ require 'rspec'
 require_relative '../test_helper'
 
 class ProfilPage
-
-
-include TestHelper
-
+  include TestHelper
 
   def profil_butonuna_tikla
     try_for(9, 3) do
-    element = @driver.find_element(:id, 'com.abonesepeti.app:id/imgProfile').click
-
+      @driver.find_element(:id, 'com.abonesepeti.app:id/imgProfile').click
     end
   end
 
   def ayarlar_butonuna_tikla
+    element = nil
     try_for(9, 3) do
-    element =  driver.find_element(:uiautomator, 'new UiSelector().text("Ayarlar")')
-    element.click
+      element = driver.find_element(:uiautomator, 'new UiSelector().text("Ayarlar")')
     end
+    element.click
   end
 
   def sifremi_degistir_click
-    element = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Değiştir")')
+    element = nil
+    try_for(9, 3) do
+      element = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Değiştir")')
+    end
     element.click
   end
 
@@ -31,13 +31,11 @@ include TestHelper
     element.send_keys(sifre)
   end
 
-
-  def baslangic_sifresini_gir(yeni_sifre='123456')
-    element = driver.find_element(:uiautomator, 'new UiSelector().text("Yeni Şifre")').send_keys(yeni_sifre)
+  def baslangic_sifresini_gir(yeni_sifre = '123456')
+    driver.find_element(:uiautomator, 'new UiSelector().text("Yeni Şifre")').send_keys(yeni_sifre)
   end
 
-
-  def baslangic_sifre_dogrulama_gir(yeni_sifre='123456')
+  def baslangic_sifre_dogrulama_gir(yeni_sifre = '123456')
     driver.find_element(:uiautomator, 'new UiSelector().text("Yeni Şifre Doğrulama")').send_keys(yeni_sifre)
   end
 
@@ -66,11 +64,8 @@ include TestHelper
     raise 'Element not found within the specified time.' unless element
 
     # Elementin metnini döndür
-    return element.text
+    element.text
   end
-
-
-
 
   def cikis_yap_click
     driver.find_element(:uiautomator, 'new UiSelector().text("Çıkış Yap")').click
