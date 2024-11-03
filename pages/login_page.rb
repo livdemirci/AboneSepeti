@@ -1,5 +1,7 @@
-
+require_relative '../test_helper'
 class LoginPage
+  include TestHelper
+
   def giris_yap_click
     giris_yap = driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")')
     giris_yap.click
@@ -12,16 +14,22 @@ class LoginPage
 
   def sifremi_unuttum_sayfasini_bekle
     wait = Selenium::WebDriver::Wait.new(timeout: 10) # 10 saniye
-    wait.until {driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")') }
+    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")') }
   end
 
   def sifremi_unuttum_click
-    sifremi_unuttum = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")')
+    sifremi_unuttum= nil
+    try_for(9, 3) do
+      sifremi_unuttum = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")')
+    end
     sifremi_unuttum.click
   end
 
   def telefon_numarasini_gir
-    telefon = driver.find_element(:uiautomator, 'new UiSelector().text("Cep Telefonu")')
+    telefon = nil
+    try_for(9, 3) do
+      telefon = driver.find_element(:uiautomator, 'new UiSelector().text("Cep Telefonu")')
+    end
     telefon.send_keys('5419539727')
   end
 
@@ -45,13 +53,13 @@ class LoginPage
 
   def dogrulaya_tiklat
     wait = Selenium::WebDriver::Wait.new(timeout: 15) # 10 saniye
-    wait.until {driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")') }
+    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")') }
     dogrula = driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")')
     dogrula.click
   end
 
   def rastgele_sifre_olustur
-    sifre = Faker::Internet.password(min_length: 8)
+    Faker::Internet.password(min_length: 8)
   end
 
   def sifre_alanina_rastgele_sifre_gir(sifre)
@@ -73,11 +81,9 @@ class LoginPage
   end
 
   def gelen_mesajlari_al
-    sms_output= `adb shell am broadcast -a io.appium.settings.sms.read --es max 10`
+    sms_output = `adb shell am broadcast -a io.appium.settings.sms.read --es max 10`
     # sms_output = `adb shell content query --uri content://sms/inbox --projection address,body,date --sort "date" --where "1=1"`
     # puts "Latest SMS Output:\n#{sms_output}"
-
-    latest_sms = nil
 
     if sms_output.empty?
       puts 'No messages found.'
@@ -90,7 +96,7 @@ class LoginPage
         if first_line =~ /address=(.*?), body=(.*?), date=(.*)/
           sender = Regexp.last_match(1)
           body = Regexp.last_match(2)
-          latest_sms = { sender: sender, body: body }
+          { sender: sender, body: body }
           puts "Sender: #{sender}, Message: #{body}"
 
           return body # Body değerini döndür

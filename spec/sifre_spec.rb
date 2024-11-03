@@ -59,11 +59,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     login_page.sifremi_unuttum_click
 
-    sleep 2 # ekranin gelmesi icin
-
     login_page.telefon_numarasini_gir
-
-    sleep 2 # numaranin girilmesi icin
 
     login_page.kodu_gonder_click
 
@@ -99,7 +95,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     profil_page.surum_yenilik_uyarisini_kapat
 
     profil_page.profil_butonuna_tikla
-    
+
     profil_page.ayarlar_butonuna_tikla
     profil_page.sifremi_degistir_click
 
