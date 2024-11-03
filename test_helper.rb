@@ -1,10 +1,11 @@
 # require 'rubygems'
 gem "appium_lib"
 
+
 require "appium_lib"
 require "rspec"
 
-require_relative File.join(BASE_DIR, 'spec', 'agileway_utils.rb')
+
 
 
 

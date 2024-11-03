@@ -1,12 +1,10 @@
 # frozen_string_literal: true
-Dir["#{File.dirname(__FILE__)}/pages/*_page.rb"].each { |file| load file } # Load all page objects
 
 BASE_DIR = File.expand_path('..', __dir__)
-require "#{BASE_DIR}/test_helper"
-# require "#{BASE_DIR}/pages/abstract_page"
-# require "#{BASE_DIR}/pages/login_page"
-# require "#{BASE_DIR}/pages/profil_page"
-require "#{BASE_DIR}/agileway_utils"
+
+Dir["#{File.dirname(__FILE__)}/pages/*_page.rb"].each { |file| load file } # Load all page objects
+require_relative './test_helper'
+require_relative './agileway_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -110,6 +108,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
     profil_page.kaydet_butonuna_tikla
 
     profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
+    expect(profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular).to eq('Şifreniz başarıyla değiştirilmiştir.')
 
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla

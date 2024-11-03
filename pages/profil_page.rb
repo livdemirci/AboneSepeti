@@ -1,3 +1,5 @@
+require 'rspec'
+require_relative '../test_helper'
 
 class ProfilPage
 
@@ -53,11 +55,22 @@ include TestHelper
   end
 
   def sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
+    element = nil
+
+    # Elementin bulunması için denemeleri başlat
     try_for(9, 3) do
-      text = driver.find_element(:id, 'com.abonesepeti.app:id/snackbar_text').text
-   expect(text).to eq('Şifreniz başarıyla değiştirilmiştir.')
-   end
+      element = driver.find_element(:id, 'com.abonesepeti.app:id/snackbar_text')
+    end
+
+    # Eğer element bulunmadıysa hata fırlat
+    raise 'Element not found within the specified time.' unless element
+
+    # Elementin metnini döndür
+    return element.text
   end
+
+
+
 
   def cikis_yap_click
     driver.find_element(:uiautomator, 'new UiSelector().text("Çıkış Yap")').click

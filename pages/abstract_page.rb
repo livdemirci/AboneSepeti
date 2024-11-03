@@ -1,3 +1,4 @@
+require_relative '../agileway_utils'
 class AbstractWindow
   include AgilewayUtils
 
@@ -52,4 +53,3 @@ class AbstractWindow
     win.find_element(:name, "Cancel").click
   end
 end
-
