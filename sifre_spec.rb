@@ -20,12 +20,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
   include TestHelper
   include AgilewayUtils
   before(:all) do
-    # device_info = get_device_info
-    # @device_name = device_info[:device_name] # Cihaz adını al
-    # @wsl_ip = get_wsl_ip
-    # puts @wsl_ip ? "WSL IP Address: #{@wsl_ip}" : 'WSL IP Address not found or incorrect format.'
-
-    @caps = {
+      @caps = {
       caps: {
         platformName: 'Android',
         deviceName: 'c2a1b4cc',

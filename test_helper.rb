@@ -6,9 +6,6 @@ require "appium_lib"
 require "rspec"
 
 
-
-
-
 module TestHelper
   include AgilewayUtils
   if defined?(TestWiseRuntimeSupport)
