@@ -2,9 +2,14 @@
 
 BASE_DIR = File.expand_path('..', __dir__)
 
-Dir["#{File.dirname(__FILE__)}/pages/*_page.rb"].each { |file| load file }
-require_relative './test_helper'
-require_relative './agileway_utils'
+Dir["#{BASE_DIR}/pages/*_page.rb"].each do |file|
+  puts "Loading file: #{file}"
+  load file
+end
+
+
+require_relative '../test_helper'
+require_relative '../agileway_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
