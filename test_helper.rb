@@ -1,16 +1,12 @@
 # require 'rubygems'
-gem "appium_lib"
-
-
-require "appium_lib"
-require "rspec"
-
+gem 'appium_lib'
+require 'appium_lib'
+require 'rspec'
+require_relative './agileway_utils'
 
 module TestHelper
   include AgilewayUtils
-  if defined?(TestWiseRuntimeSupport)
-    include TestWiseRuntimeSupport
-  end
+  include TestWiseRuntimeSupport if defined?(TestWiseRuntimeSupport)
 
   def driver
     @driver
@@ -22,85 +18,81 @@ module TestHelper
 
   # for Appium v1
   def app_caps
-    desired_caps = {
+    {
       caps: {
-        platformName: "Windows",
-        platform: "Windows",
-        deviceName: "MyPC",
-        app: app_id(),
+        platformName: 'Windows',
+        platform: 'Windows',
+        deviceName: 'MyPC',
+        app: app_id
       },
-      appium_lib: { wait: 0.5 },
+      appium_lib: { wait: 0.5 }
     }
   end
 
   # for Appium v2, mouse and action chains not working well yet due to winappdriver
-  def appium2_opts(opts = {})
-    opts = {
+  def appium2_opts(_opts = {})
+    {
       caps: {
-        automationName: "windows",
-        platformName: "Windows",
-        deviceName: "Dell",
-        app: app_id(),
+        automationName: 'windows',
+        platformName: 'Windows',
+        deviceName: 'Dell',
+        app: app_id
       },
       appium_lib: {
-        server_url: "http://127.0.0.1:4723"
+        server_url: 'http://127.0.0.1:4723'
       }
     }
   end
 
-
   # for attach any apps
   def desktop_session_caps
-    desired_caps = {
+    {
       caps: {
-        platformName: "Windows",
-        platform: "Windows",
-        deviceName: ENV["DEVICE_NAME"] || "Surface",
-        app: "Root",
+        platformName: 'Windows',
+        platform: 'Windows',
+        deviceName: ENV['DEVICE_NAME'] || 'Surface',
+        app: 'Root'
       },
       appium_lib: {
-        wait: 0.5,
-      },
+        wait: 0.5
+      }
     }
-    return desired_caps
   end
 
   def debugging?
-    if ENV["RUN_IN_TESTWISE"].to_s == "true" && ENV["TESTWISE_RUNNING_AS"] == "test_case"
-      return true
-    end
-    return $TESTWISE_DEBUGGING && $TESTWISE_RUNNING_AS == "test_case"
+    return true if ENV['RUN_IN_TESTWISE'].to_s == 'true' && ENV['TESTWISE_RUNNING_AS'] == 'test_case'
+
+    $TESTWISE_DEBUGGING && $TESTWISE_RUNNING_AS == 'test_case'
   end
 
   # quick to refer the test data file under 'testdata' folder
   def test_data_file(relative_path)
-    the_file = File.expand_path File.join(File.dirname(__FILE__), "testdata", relative_path)
-    the_file.gsub!("/", "\\") if RUBY_PLATFORM =~ /mingw/
-    return the_file
+    the_file = File.expand_path File.join(File.dirname(__FILE__), 'testdata', relative_path)
+    the_file.gsub!('/', '\\') if RUBY_PLATFORM =~ /mingw/
+    the_file
   end
 
   # quick to refer tmp file under 'tmp' folder
   def tmp_dir(sub_dir_name, opts = {})
-    the_dir = File.expand_path File.join(File.dirname(__FILE__), "tmp", sub_dir_name)
-    the_dir.gsub!("/", "\\") if RUBY_PLATFORM =~ /mingw/
-    unless opts[:do_not_create]
-      FileUtils.mkdir_p(the_dir) unless Dir.exist?(the_dir)
-    end
-    return the_dir
+    the_dir = File.expand_path File.join(File.dirname(__FILE__), 'tmp', sub_dir_name)
+    the_dir.gsub!('/', '\\') if RUBY_PLATFORM =~ /mingw/
+    FileUtils.mkdir_p(the_dir) if !opts[:do_not_create] && !Dir.exist?(the_dir)
+    the_dir
   end
 
   # prevent extra long string generated test scripts that blocks execution when running in
   # TestWise or BuildWise Agent
   def safe_print(str)
     return if str.nil? || str.empty?
-    if (str.size < 250)
+
+    if str.size < 250
       puts(str)
       return
     end
 
-    if ENV["RUN_IN_TESTWISE"].to_s == "true" && ENV["RUN_IN_BUILDWISE_AGENT"].to_s == "true"
-      puts(str[0..200])
-    end
+    return unless ENV['RUN_IN_TESTWISE'].to_s == 'true' && ENV['RUN_IN_BUILDWISE_AGENT'].to_s == 'true'
+
+    puts(str[0..200])
   end
 
   # a convenient method to use main_window, if @main_window is set
@@ -114,6 +106,4 @@ module TestHelper
   def win
     @main_window
   end
-
-
 end

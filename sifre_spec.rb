@@ -75,7 +75,7 @@ describe 'Kullanici cep telefonunu girip şşşşşşkodu gönderdikten sonra ge
 
     sifre = login_page.rastgele_sifre_olustur
 
-    sleep 1 # sifre olusturulmasi icin
+    sleep 2 # sifre olusturulmasi icin
 
     login_page.sifre_alanina_rastgele_sifre_gir(sifre)
 
