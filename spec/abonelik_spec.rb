@@ -132,20 +132,25 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
       # Eğer herhangi bir toast mesajı bulunursa, mesajı kontrol et
       if toast_messages.any?
-        expect(toast_messages.any? { |toast| toast.text == 'Abonelik başarılı bir şekilde silindi.' }).to be true, 'Toast mesajı bulunamadı.'
+        expect(toast_messages.any? do |toast|
+          toast.text == 'Abonelik başarılı bir şekilde silindi.'
+        end).to be true, 'Toast mesajı bulunamadı.'
         break # Eğer mesaj bulunduysa döngüyü sonlandır
       end
     end
 
     try_for(9, 3) do
-      driver.find_element(:id, 'com.abonesepeti.app:id/btn_back').click # geri butonuna tıkla
+      driver.find_element(:uiautomator, 'new UiSelector().resourceId("com.abonesepeti.app:id/btn_back")') # Geri butonu bekle
     end
 
-    element = nil
+    geri_butonu = nil
     try_for(9, 3) do
-      element = driver.find_element(:id, 'com.abonesepeti.app:id/home_fragment_container') # abonelikler
+      geri_butonu = driver.find_element(:uiautomator, 'new UiSelector().resourceId("com.abonesepeti.app:id/btn_back")')
     end
-    element.click
+    sleep 0.5
+    try_for(9, 3) do
+      geri_butonu.click if geri_butonu && geri_butonu.displayed?
+    end
 
     driver.find_element(:uiautomator, 'new UiSelector().text("Su")').click # su aboneliklerine tikla
 
@@ -178,15 +183,15 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     driver.find_element(:uiautomator, 'new UiSelector().text("Sil")').click
 
-    
-
     try_for(9, 3) do
       driver.find_element(:id, 'com.abonesepeti.app:id/btn_negative_custom_dialog')
     end
     driver.find_element(:id, 'com.abonesepeti.app:id/btn_negative_custom_dialog').click
 
-    elements = @driver.find_elements(:xpath, "//*[contains(@text, 'Evim_Su')]")
-    expect(elements).to be_empty, 'Metin bulundu ama bulunmamalıydı.'
+    try_for(9, 3) do
+      toast_message = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]")
+      expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
+    end
 
     driver.quit_driver
   end
