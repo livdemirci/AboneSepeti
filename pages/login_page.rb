@@ -127,4 +127,9 @@ class LoginPage
 
     nil # OTP bulunamazsa
   end
+
+  def kullanici_sifresini_gir(sifre = '123456')
+    sifre_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
+    sifre_input.send_keys(sifre)
+  end
 end
