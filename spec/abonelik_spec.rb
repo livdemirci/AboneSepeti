@@ -8,7 +8,7 @@ Dir["#{BASE_DIR}/pages/*_page.rb"].each do |file|
 end
 require_relative '../test_helper'
 require_relative '../agileway_utils'
-require_relative 'my_utils'
+require_relative '../my_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -104,7 +104,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.aboneligi_sil_butonuna_tikla
     abonelikler_page.negatif_dialog_click
     abonelikler_page.toast_mesajı_bekle
-    
+
     try_for(9, 3) do
       expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
     end
