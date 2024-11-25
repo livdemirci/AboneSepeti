@@ -145,10 +145,12 @@ class AboneliklerPage
 
   def toast_mesajini_bul(mesaj)
     # Belirtilen toast mesajını bulmak için xpath kullanıyoruz
-    toast_message = @driver.find_elements(:xpath, "//android.widget.Toast[contains(@text, '#{mesaj}')]")
-
+    toast_message = nil
+    try_for(9, 3) do
+      toast_message = @driver.find_elements(:xpath, "//android.widget.Toast[contains(@text, '#{mesaj}')]").first
+    end
     # Eğer bulunursa ilk öğeyi döner, bulunamazsa boş bir dizi döner
-    toast_message.first
+    toast_message
   end
 
   def abonelikler_click
@@ -182,7 +184,7 @@ class AboneliklerPage
   def toast_mesajı_bekle
     text = nil
     try_for(9, 3) do
-     text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
+      text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text
   end
