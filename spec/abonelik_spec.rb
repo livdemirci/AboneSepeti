@@ -39,7 +39,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     }
     @driver = Appium::Driver.new(@caps, true).start_driver
     # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
-    Appium.promote_appium_methods Object
+    Appium.promote_appium_methods self
   end
 
   after(:all) do
