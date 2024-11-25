@@ -67,9 +67,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.kurumun_goruntulendigini_dogrula
     text_adana_su = abonelikler_page.adana_suyu_bekle
 
-    try_for(9, 3) do
-      expect(text_adana_su).to include('ADANA SU')
-    end
+    expect(text_adana_su).to include('ADANA SU')
 
     abonelikler_page.kurumu_sec_click
     abonelikler_page.abone_numarasi_gir
@@ -85,9 +83,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.devam_et_ve_baska_ekle_butonuna_tikla
     toast_message = abonelikler_page.abanolik_basarili_bir_sekilde_olusturuldugunu_bekle
 
-    try_for(9, 3) do
-      expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı.'
-    end
+    expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı.'
 
     abonelikler_page.geri_butonuna_tikla
 
@@ -96,9 +92,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     evim_su = abonelikler_page.evim_suyu_bekle
 
-    try_for(9, 3) do
-      expect(evim_su).to include('Evim_Su')
-    end
+    expect(evim_su).to include('Evim_Su')
 
     abonelikler_page.aboneligi_sil_butonunu_görene_kadar_asagi_kaydir
     abonelikler_page.aboneligi_sil_butonuna_tikla
