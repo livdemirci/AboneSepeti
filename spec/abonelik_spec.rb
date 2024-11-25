@@ -65,11 +65,11 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.kurum_ara
     abonelikler_page.kurumun_goruntulenmeesini_bekle
     abonelikler_page.kurumun_goruntulendigini_dogrula
-    abonelikler_page.adana_suyu_bekle
+    text_adana_su=abonelikler_page.adana_suyu_bekle
     
 
     try_for(9, 3) do
-      expect(text).to include('ADANA SU') 
+      expect(text_adana_su).to include('ADANA SU') 
     end
 
     abonelikler_page.kurumu_sec_click
@@ -84,7 +84,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     sleep 0.5 # hane seçimi için
     abonelikler_page.kisi_sec_click
     abonelikler_page.devam_et_ve_baska_ekle_butonuna_tikla
-    abonelikler_page.abanolik_basarili_bir_sekilde_silindigini_bekle
+    toast_message=abonelikler_page.abanolik_basarili_bir_sekilde_silindigini_bekle
 
     try_for(9, 3) do
       expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı.'
@@ -94,7 +94,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     abonelikler_page.su_aboneliklerine_tikla
     abonelikler_page.abonelige_tikla
-    abonelikler_page.evim_suyu_bekle
+    evim_su=abonelikler_page.evim_suyu_bekle
 
     try_for(9, 3) do
       expect(evim_su).to include('Evim_Su')
@@ -103,7 +103,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.aboneligi_sil_butonunu_görene_kadar_asagi_kaydir
     abonelikler_page.aboneligi_sil_butonuna_tikla
     abonelikler_page.negatif_dialog_click
-    abonelikler_page.toast_mesajı_bekle
+    toast_message=abonelikler_page.toast_mesajı_bekle
 
     try_for(9, 3) do
       expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
