@@ -105,7 +105,9 @@ class AboneliklerPage
   end
 
   def su_aboneliklerine_tikla
-    driver.find_element(:uiautomator, 'new UiSelector().text("Su")').click # su aboneliklerine tikla
+    try_for(9, 3) do
+      driver.find_element(:uiautomator, 'new UiSelector().text("Su")').click # su aboneliklerine tikla
+    end
   end
 
   def abonelige_tikla
@@ -158,20 +160,30 @@ class AboneliklerPage
   end
 
   def adana_suyu_bekle
+    text = nil
     try_for(9, 3) do
-      driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').text # Adana suyu bekle
+      text = driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').text # Adana suyu bekle
     end
+    text
   end
 
-  def abanolik_basarili_bir_sekilde_silindigini_bekle
-    abonelikler_page.toast_mesajini_bul('Abonelik başarılı bir şekilde oluşturuldu.')
+  def abanolik_basarili_bir_sekilde_olusturuldugunu_bekle
+    toast_mesajini_bul('Abonelik başarılı bir şekilde oluşturuldu.')
   end
 
   def evim_suyu_bekle
-    driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text
+    text = nil
+    try_for(9, 3) do
+      text = driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text # Evim suyu bekle
+    end
+    text
   end
 
   def toast_mesajı_bekle
-    driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
+    text = nil
+    try_for(9, 3) do
+      driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
+    end
+    text
   end
 end

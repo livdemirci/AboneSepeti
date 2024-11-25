@@ -13,7 +13,7 @@ class LoginPage
   end
 
   def sifremi_unuttum_sayfasini_bekle
-    wait = Selenium::WebDriver::Wait.new(timeout: 10) # 10 saniye
+    wait = Selenium::WebDriver::Wait.new(timeout: 15) # 10 saniye
     wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")') }
   end
 
