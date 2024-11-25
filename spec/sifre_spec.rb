@@ -8,6 +8,7 @@ Dir["#{BASE_DIR}/pages/*_page.rb"].each do |file|
 end
 require_relative '../test_helper'
 require_relative '../agileway_utils'
+require_relative '../my_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -18,10 +19,11 @@ require 'json'
 require 'faker'
 require 'chunky_png'
 require 'base64'
+include MyUtils
+include TestHelper
+include AgilewayUtils
 
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
-  include TestHelper
-  include AgilewayUtils
   before(:all) do
     @caps = {
       caps: {
@@ -37,9 +39,8 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
       }
     }
     @driver = Appium::Driver.new(@caps, true).start_driver
-    #@driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
+    # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
     Appium.promote_appium_methods Object
-
   end
 
   after(:all) do
@@ -95,6 +96,10 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     profil_page.surum_yenilik_uyarisini_kapat
 
     profil_page.profil_butonuna_tikla
+
+    scroll_to_element(@driver, 10) do
+      driver.find_element(:uiautomator, 'new UiSelector().text("Ayarlar")')
+    end
 
     profil_page.ayarlar_butonuna_tikla
     profil_page.sifremi_degistir_click

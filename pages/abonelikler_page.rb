@@ -13,7 +13,6 @@ class AboneliklerPage
 
   def abonelik_ekle_butonuna_tikla
     driver.find_element(:id, 'com.abonesepeti.app:id/txt_header_button').click # Abonelik ekle butonuna tıkla
-    
   end
 
   def kurum_ara
@@ -156,5 +155,23 @@ class AboneliklerPage
       element = driver.find_element(:id, 'com.abonesepeti.app:id/home_fragment_container') # abonelikler
     end
     element.click
+  end
+
+  def adana_suyu_bekle
+    try_for(9, 3) do
+      driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').text # Adana suyu bekle
+    end
+  end
+
+  def abanolik_basarili_bir_sekilde_silindigini_bekle
+    abonelikler_page.toast_mesajini_bul('Abonelik başarılı bir şekilde oluşturuldu.')
+  end
+
+  def evim_suyu_bekle
+    driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text
+  end
+
+  def toast_mesajı_bekle
+    driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
   end
 end

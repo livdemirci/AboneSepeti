@@ -8,6 +8,7 @@ Dir["#{BASE_DIR}/pages/*_page.rb"].each do |file|
 end
 require_relative '../test_helper'
 require_relative '../agileway_utils'
+require_relative 'my_utils'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -64,12 +65,13 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.kurum_ara
     abonelikler_page.kurumun_goruntulenmeesini_bekle
     abonelikler_page.kurumun_goruntulendigini_dogrula
-
-    text = driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').text # Adana suyu bekle
+    abonelikler_page.adana_suyu_bekle
+    
 
     try_for(9, 3) do
-      expect(text).to include('ADANA SU') # 'include' matcher'ı kullanılıyor
+      expect(text).to include('ADANA SU') 
     end
+
     abonelikler_page.kurumu_sec_click
     abonelikler_page.abone_numarasi_gir
     abonelikler_page.abone_adi_gir
@@ -82,9 +84,9 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     sleep 0.5 # hane seçimi için
     abonelikler_page.kisi_sec_click
     abonelikler_page.devam_et_ve_baska_ekle_butonuna_tikla
+    abonelikler_page.abanolik_basarili_bir_sekilde_silindigini_bekle
 
     try_for(9, 3) do
-      toast_message = abonelikler_page.toast_mesajini_bul('Abonelik başarılı bir şekilde oluşturuldu.')
       expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı.'
     end
 
@@ -92,18 +94,18 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     abonelikler_page.su_aboneliklerine_tikla
     abonelikler_page.abonelige_tikla
+    abonelikler_page.evim_suyu_bekle
 
     try_for(9, 3) do
-      evim_su = driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text
       expect(evim_su).to include('Evim_Su')
     end
 
     abonelikler_page.aboneligi_sil_butonunu_görene_kadar_asagi_kaydir
     abonelikler_page.aboneligi_sil_butonuna_tikla
     abonelikler_page.negatif_dialog_click
-
+    abonelikler_page.toast_mesajı_bekle
+    
     try_for(9, 3) do
-      toast_message = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
       expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
     end
 

@@ -1,0 +1,15 @@
+
+[1mFrom:[0m /home/livde/AboneSepeti/spec/sifre_spec.rb:99 :
+
+     [1;34m94[0m: 
+     [1;34m95[0m:     profil_page.surum_yenilik_uyarisini_kapat
+     [1;34m96[0m: 
+     [1;34m97[0m:     profil_page.profil_butonuna_tikla
+     [1;34m98[0m: 
+ =>  [1;34m99[0m:     binding.pry
+    [1;34m100[0m: 
+    [1;34m101[0m:     element = driver.find_element([33m:uiautomator[0m, [31m[1;31m'[0m[31mnew UiSelector().text("Ayarlar")[1;31m'[0m[31m[0m)
+    [1;34m102[0m: 
+    [1;34m103[0m:     [1;34m# W3C standardında sürükleme hareketi[0m
+    [1;34m104[0m:     actions = driver.action
+
