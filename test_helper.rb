@@ -29,6 +29,22 @@ module TestHelper
     }
   end
 
+  def android_caps
+    @caps = {
+      caps: {
+        platformName: 'Android',
+        deviceName: 'c2a1b4cc',
+        appPackage: 'com.abonesepeti.app',
+        appActivity: 'com.abonesepeti.presentation.main.MainActivity',
+        automationName: 'UiAutomator2'
+      },
+      appium_lib: {
+        server_url: 'http://127.0.0.1:4723',
+        wait_timeout: 30_000
+      }
+    }
+  end
+
   # for Appium v2, mouse and action chains not working well yet due to winappdriver
   def appium2_opts(_opts = {})
     {

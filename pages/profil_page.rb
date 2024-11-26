@@ -40,7 +40,9 @@ class ProfilPage
   end
 
   def kaydet_butonuna_tikla
-    driver.find_element(:uiautomator, 'new UiSelector().text("Kaydet")').click
+    try_for(9, 3) do
+      driver.find_element(:uiautomator, 'new UiSelector().text("Kaydet")').click
+    end
   end
 
   def surum_yenilik_uyarisini_kapat
@@ -54,7 +56,6 @@ class ProfilPage
 
   def sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
     element = nil
-
     # Elementin bulunması için denemeleri başlat
     try_for(9, 3) do
       element = driver.find_element(:id, 'com.abonesepeti.app:id/snackbar_text')
@@ -68,10 +69,18 @@ class ProfilPage
   end
 
   def cikis_yap_click
-    driver.find_element(:uiautomator, 'new UiSelector().text("Çıkış Yap")').click
+    element = nil
+    try_for(9, 3) do
+      element = driver.find_element(:uiautomator, 'new UiSelector().text("Çıkış Yap")')
+    end
+    element.click
   end
 
   def evet_butonuna_tikla
-    driver.find_element(:uiautomator, 'new UiSelector().text("Evet")').click
+    element = nil
+    try_for(9, 3) do
+      element = driver.find_element(:uiautomator, 'new UiSelector().text("Evet")')
+    end
+    element.click
   end
 end

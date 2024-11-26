@@ -25,20 +25,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   include TestHelper
   include AgilewayUtils
   before(:all) do
-    @caps = {
-      caps: {
-        platformName: 'Android',
-        deviceName: 'c2a1b4cc',
-        appPackage: 'com.abonesepeti.app',
-        appActivity: 'com.abonesepeti.presentation.main.MainActivity',
-        automationName: 'UiAutomator2'
-      },
-      appium_lib: {
-        server_url: 'http://127.0.0.1:4723',
-        wait_timeout: 30_000
-      }
-    }
-    @driver = Appium::Driver.new(@caps, true).start_driver
+    @driver = Appium::Driver.new(android_caps, true).start_driver
     # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
     Appium.promote_appium_methods Object
   end
