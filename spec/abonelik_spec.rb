@@ -22,6 +22,7 @@ require 'base64'
 
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   
+  include MyUtils
   include TestHelper
   include AgilewayUtils
   before(:all) do
@@ -38,7 +39,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
         wait_timeout: 30_000
       }
     }
-    @driver = Appium::Driver.new(@caps, true).start_driver
+    Appium::Driver.new(@caps, true).start_driver
     Appium.promote_appium_methods Object
     # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
     
