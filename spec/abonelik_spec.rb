@@ -25,9 +25,9 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   include MyUtils
   include TestHelper
   include AgilewayUtils
-  
+
   before(:all) do    
-    Appium::Driver.new(@android_caps, true).start_driver
+    Appium::Driver.new(android_caps, true).start_driver
     Appium.promote_appium_methods Object
     # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
     
