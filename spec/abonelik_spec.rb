@@ -34,7 +34,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   end
 
   after(:all) do
-    # @driver.quit if @driver
+     @driver.quit if @driver
   end
 
   it 'Kullanici Aboneliklerim sayfasında abonelikler görüntülenebilmeli,hane ve kişi filtrelemesi yapılabilmeli.' do
@@ -92,6 +92,5 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
 
-    driver.quit_driver
   end
 end
