@@ -57,7 +57,7 @@ class ProfilPage
   def sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
     element = nil
     # Elementin bulunması için denemeleri başlat
-    try_for(9, 0,1) do
+    try_for(9, 0.1) do
       element = driver.find_element(:id, 'com.abonesepeti.app:id/snackbar_text')
     end
 

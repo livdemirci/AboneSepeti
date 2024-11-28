@@ -163,7 +163,7 @@ class AboneliklerPage
 
   def adana_suyu_bekle
     text = nil
-    try_for(9, 0,1) do
+    try_for(9, 0.1) do
       text = driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').text # Adana suyu bekle
     end
     text
@@ -175,7 +175,7 @@ class AboneliklerPage
 
   def evim_suyu_bekle
     text = nil
-    try_for(9, 0,1) do
+    try_for(9, 0.1) do
       text = driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text # Evim suyu bekle
     end
     text
@@ -183,7 +183,7 @@ class AboneliklerPage
 
   def toast_mesajı_bekle
     text = nil
-    try_for(9, 0,1) do
+    try_for(9, 0.1) do
       text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text
