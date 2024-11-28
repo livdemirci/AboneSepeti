@@ -101,6 +101,6 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
-    driver.quit_driver
+    
   end
 end
