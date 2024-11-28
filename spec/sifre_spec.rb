@@ -98,7 +98,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
     expect(profil_page.sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular).to eq('Şifreniz başarıyla değiştirilmiştir.')
-    sleep 1
+    sleep 0.5
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
     
