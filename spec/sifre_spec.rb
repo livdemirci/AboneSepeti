@@ -31,7 +31,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   end
 
   after(:all) do
-    # @driver.quit if @driver
+     @driver.quit if @driver
   end
 
   it 'Kullanici telefon numarasini girerek sifresini sifirlar.' do
