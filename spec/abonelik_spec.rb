@@ -47,6 +47,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     login_page.giris_sayfasini_bekle
     login_page.giris_yap_click
     login_page.sifremi_unuttum_sayfasini_bekle
+    login_page.sifremi_unuttum_click
     login_page.telefon_numarasini_gir
     login_page.kullanici_sifresini_gir
     login_page.giris_yap_click
