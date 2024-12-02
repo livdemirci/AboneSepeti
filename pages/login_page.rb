@@ -3,7 +3,18 @@ class LoginPage
   include TestHelper
 
   def giris_yap_click
-    giris_yap = driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")')
+    giris_yap = nil
+    try_for(9, 3) do
+      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btnSkip')
+    end
+    giris_yap.click
+  end
+
+  def giris_yap_login_click
+    giris_yap = nil
+    try_for(9, 3) do
+      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btn_login')
+    end
     giris_yap.click
   end
 
@@ -18,7 +29,7 @@ class LoginPage
   end
 
   def sifremi_unuttum_click
-    sifremi_unuttum= nil
+    sifremi_unuttum = nil
     try_for(9, 3) do
       sifremi_unuttum = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")')
     end
@@ -31,6 +42,30 @@ class LoginPage
       telefon = driver.find_element(:uiautomator, 'new UiSelector().text("Cep Telefonu")')
     end
     telefon.send_keys('5419539727')
+  end
+
+  def e_posta_veya_telefon_numarasini_gir
+    telefon = nil
+    try_for(9, 3) do
+      telefon = driver.find_element(:uiautomator, 'new UiSelector().text("E-posta veya Telefon")')
+    end
+    telefon.send_keys('5419539727')
+  end
+
+  def varsayılan_sifreyi_gir
+    sifre = nil
+    try_for(9, 3) do
+      sifre = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
+    end
+    sifre.send_keys('123456')
+  end
+
+  def giris_yap_butonuna_tikla
+    giris_yap = nil
+    try_for(9, 3) do
+      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btn_login')
+    end
+    giris_yap.click
   end
 
   def kodu_gonder_click
@@ -131,5 +166,19 @@ class LoginPage
   def kullanici_sifresini_gir(sifre = '123456')
     sifre_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
     sifre_input.send_keys(sifre)
+  end
+
+  def version_uyarisini_kapat
+    try_for(9, 3) do
+      # Uyarı elementi çıkarsa bulur ve işlem yaparız
+      if driver.find_element(:uiautomator,
+                             'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")').displayed?
+        driver.find_element(:uiautomator,
+                            'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")').click
+      end
+    rescue Selenium::WebDriver::Error::NoSuchElementError
+      # Element bulunamadığında hata atmadan devam eder
+      puts 'Uyarı elementi bulunamadı, devam ediliyor...'
+    end
   end
 end

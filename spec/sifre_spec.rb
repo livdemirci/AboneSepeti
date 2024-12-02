@@ -31,7 +31,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   end
 
   after(:all) do
-     @driver.quit if @driver
+    @driver.quit if @driver
   end
 
   it 'Kullanici telefon numarasini girerek sifresini sifirlar.' do
@@ -74,13 +74,15 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     sleep 3 # sifrenin kaydedilmesi icin
 
-    login_page.telefon_numarasini_gir
+    login_page.e_posta_veya_telefon_numarasini_gir
 
     login_page.sifre_alanina_rastgele_sifre_gir(sifre)
 
-    login_page.giris_yap_click
+    login_page.giris_yap_login_click
 
     profil_page.surum_yenilik_uyarisini_kapat
+
+    login_page.version_uyarisini_kapat
 
     profil_page.profil_butonuna_tikla
 
@@ -101,6 +103,5 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     sleep 0.5
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
-    
   end
 end

@@ -21,20 +21,18 @@ require 'chunky_png'
 require 'base64'
 
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
-  
   include MyUtils
   include TestHelper
   include AgilewayUtils
 
-  before(:all) do    
+  before(:all) do
     Appium::Driver.new(android_caps, true).start_driver
     Appium.promote_appium_methods Object
     # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
-    
   end
 
   after(:all) do
-     @driver.quit if @driver
+    @driver.quit if @driver
   end
 
   it 'Kullanici Aboneliklerim sayfasında abonelikler görüntülenebilmeli,hane ve kişi filtrelemesi yapılabilmeli.' do
@@ -46,12 +44,18 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     login_page.giris_sayfasini_bekle
     login_page.giris_yap_click
+
     login_page.sifremi_unuttum_sayfasini_bekle
-    login_page.sifremi_unuttum_click
-    login_page.telefon_numarasini_gir
-    login_page.kullanici_sifresini_gir
-    login_page.giris_yap_click
+
+    login_page.e_posta_veya_telefon_numarasini_gir
+
+    login_page.varsayılan_sifreyi_gir
+
+    login_page.giris_yap_butonuna_tikla
+
     profil_page.surum_yenilik_uyarisini_kapat
+
+    login_page.version_uyarisini_kapat
     abonelikler_page.abonelikler_click
     abonelikler_page.abonelik_ekle_butonuna_tikla
     abonelikler_page.kurum_ara

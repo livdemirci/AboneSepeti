@@ -51,6 +51,9 @@ class ProfilPage
       if driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog').displayed?
         driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog').click
       end
+    rescue Selenium::WebDriver::Error::NoSuchElementError
+      # Element bulunamadığında hata atmadan devam eder
+      puts "Uyarı elementi bulunamadı, devam ediliyor..."
     end
   end
 
