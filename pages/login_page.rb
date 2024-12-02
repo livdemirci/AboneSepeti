@@ -169,7 +169,7 @@ class LoginPage
   end
 
   def version_uyarisini_kapat
-    try_for(9, 3) do
+    try_for(5, 0.1) do
       # Uyarı elementi çıkarsa bulur ve işlem yaparız
       if driver.find_element(:uiautomator,
                              'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")').displayed?

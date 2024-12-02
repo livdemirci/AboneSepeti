@@ -54,8 +54,9 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     login_page.giris_yap_butonuna_tikla
 
     profil_page.surum_yenilik_uyarisini_kapat
-
+    sleep 0.5
     login_page.version_uyarisini_kapat
+    sleep 0.5
     abonelikler_page.abonelikler_click
     abonelikler_page.abonelik_ekle_butonuna_tikla
     abonelikler_page.kurum_ara
