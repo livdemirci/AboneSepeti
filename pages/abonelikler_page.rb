@@ -111,11 +111,11 @@ class AboneliklerPage
   end
 
   def abonelige_tikla
+    evim_su = nil
     try_for(9, 3) do
-      driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")') # Evim suyu bekle
+      evim_su = driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")') # Evim suyu bekle
     end
-    driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text
-    driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').click # Evim suyu görüntülemek icin tikla
+    evim_su.click # Evim suyu görüntülemek icin tikla
   end
 
   def aboneligi_sil_butonunu_görene_kadar_asagi_kaydir
@@ -146,7 +146,7 @@ class AboneliklerPage
   def toast_mesajini_bul(mesaj)
     # Belirtilen toast mesajını bulmak için xpath kullanıyoruz
     toast_message = nil
-    try_for(9, 3) do
+    try_for(9, 0.1) do
       toast_message = @driver.find_elements(:xpath, "//android.widget.Toast[contains(@text, '#{mesaj}')]").first
     end
     # Eğer bulunursa ilk öğeyi döner, bulunamazsa boş bir dizi döner
@@ -175,7 +175,7 @@ class AboneliklerPage
 
   def evim_suyu_bekle
     text = nil
-    try_for(9, 0.1) do
+    try_for(5, 0.1) do
       text = driver.find_element(:uiautomator, 'new UiSelector().text("Evim_Su")').text # Evim suyu bekle
     end
     text
@@ -183,7 +183,7 @@ class AboneliklerPage
 
   def toast_mesajı_bekle
     text = nil
-    try_for(9, 0.1) do
+    try_for(5, 0.1) do
       text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text
