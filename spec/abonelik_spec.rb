@@ -54,20 +54,20 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     login_page.giris_yap_butonuna_tikla
 
     profil_page.surum_yenilik_uyarisini_kapat
-    
+
     login_page.version_uyarisini_kapat
-    
+
     abonelikler_page.abonelikler_click
     abonelikler_page.abonelik_ekle_butonuna_tikla
-    abonelikler_page.kurum_ara
+    abonelikler_page.kurum_ara("ADANA")
     abonelikler_page.kurumun_goruntulenmeesini_bekle
     abonelikler_page.kurumun_goruntulendigini_dogrula
     text_adana_su = abonelikler_page.adana_suyu_bekle
 
     expect(text_adana_su).to include('ADANA SU')
-    
+
     abonelikler_page.kurumu_sec_click
-    abonelikler_page.abone_numarasi_gir
+    abonelikler_page.abone_numarasi_gir("1234567890")
     abonelikler_page.abone_adi_gir
     abonelikler_page.baslangic_tarihi_sec
     abonelikler_page.ok_button_click
@@ -81,7 +81,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     toast_message = abonelikler_page.abanolik_basarili_bir_sekilde_olusturuldugunu_bekle
 
     expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı.'
-    
+
     abonelikler_page.geri_butonuna_tikla
 
     abonelikler_page.su_aboneliklerine_tikla
@@ -90,7 +90,6 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     evim_su = abonelikler_page.evim_suyu_bekle
 
     expect(evim_su).to include('Evim_Su')
-    
 
     abonelikler_page.aboneligi_sil_butonunu_görene_kadar_asagi_kaydir
     abonelikler_page.aboneligi_sil_butonuna_tikla
@@ -98,6 +97,5 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     toast_message = abonelikler_page.toast_mesajı_bekle
 
     expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
-    
   end
 end

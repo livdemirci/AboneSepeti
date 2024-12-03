@@ -15,8 +15,9 @@ class AboneliklerPage
     driver.find_element(:id, 'com.abonesepeti.app:id/txt_header_button').click # Abonelik ekle butonuna tıkla
   end
 
-  def kurum_ara
-    driver.find_element(:uiautomator, 'new UiSelector().text("Kurum ara")').send_keys('adana') # Kurum ara adana
+  def kurum_ara(kurum)
+    element = driver.find_element(:uiautomator, 'new UiSelector().text("Kurum ara")')
+    element.send_keys(kurum) # Kurum adı doğrudan parametre olarak geçilir
   end
 
   def kurumun_goruntulenmeesini_bekle
@@ -31,12 +32,13 @@ class AboneliklerPage
     driver.find_element(:uiautomator, 'new UiSelector().text("ADANA SU")').click # Adana suyu seç
   end
 
-  def abone_numarasi_gir
+  def abone_numarasi_gir(numara)
+    element = nil
     try_for(9, 3) do
-      driver.find_element(:id, 'com.abonesepeti.app:id/service_number') # Abone numarası gir
+      element = driver.find_element(:id, 'com.abonesepeti.app:id/service_number') # Abone numarası gir
     end
 
-    driver.find_element(:id, 'com.abonesepeti.app:id/service_number').send_keys('1234567890')
+    element.send_keys(numara)
   end
 
   def abone_adi_gir
@@ -183,7 +185,7 @@ class AboneliklerPage
 
   def toast_mesajı_bekle
     text = nil
-    try_for(5, 0.1) do
+    try_for(7, 0.1) do
       text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text
