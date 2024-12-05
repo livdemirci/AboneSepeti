@@ -46,16 +46,24 @@ class ProfilPage
   end
 
   def surum_yenilik_uyarisini_kapat
-    try_for(7, 0.1) do
-      # Uyarı elementi çıkarsa bulur ve işlem yaparız
-      if driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog').displayed?
-        driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog').click
+    begin
+      try_for(7, 0.1) do
+        # Uyarı elementi çıkarsa bulur ve işlem yaparız
+        button = driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog')
+        if button.displayed?
+          button.click
+          puts 'Sürüm yenilik uyarısı kapatıldı!'
+        end
       end
     rescue Selenium::WebDriver::Error::NoSuchElementError
       # Element bulunamadığında hata atmadan devam eder
       puts "Uyarı elementi bulunamadı, devam ediliyor..."
+    rescue => e
+      # Diğer olası hatalar loglanır
+      puts "Beklenmeyen bir hata oluştu: #{e.message}"
     end
   end
+  
 
   def sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
     element = nil
