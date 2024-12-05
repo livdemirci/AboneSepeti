@@ -169,13 +169,20 @@ class LoginPage
   end
 
   def version_uyarisini_kapat
-    try_for(7, 0.1) do
-      button = driver.find_element(:uiautomator,
-                                   'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")')
-      button.click if button.displayed?
-      puts 'Versiyon uyarısı kapatıldı!' 
+    begin
+      # Elemanı bulmaya ve işlem yapmaya çalış
+      try_for(7, 0.1) do
+        button = driver.find_element(:uiautomator,
+                                     'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")')
+        button.click if button.displayed?
+        puts 'Versiyon uyarısı kapatıldı!'
+      end
+    rescue Selenium::WebDriver::Error::NoSuchElementError
+      # Eleman bulunamazsa sessizce devam et
+      puts 'Versiyon uyarısı bulunamadı, devam ediliyor...'
+    rescue => e
+      # Diğer beklenmeyen hataları logla
+      puts "Beklenmeyen bir hata oluştu: #{e.message}"
     end
-  rescue Selenium::WebDriver::Error::NoSuchElementError
-    puts 'Versiyon uyarısı bulunamadı, devam ediliyor...' # Eleman bulunamazsa log mesajı
   end
 end
