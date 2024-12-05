@@ -171,7 +171,7 @@ class LoginPage
   def version_uyarisini_kapat
     begin
       # Elemanı bulmaya ve işlem yapmaya çalış
-      try_for(7, 0.1) do
+      try_for(3, 0.1) do
         button = driver.find_element(:uiautomator,
                                      'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")')
         button.click if button.displayed?

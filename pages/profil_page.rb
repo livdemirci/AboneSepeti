@@ -47,7 +47,7 @@ class ProfilPage
 
   def surum_yenilik_uyarisini_kapat
     begin
-      try_for(7, 0.1) do
+      try_for(3, 0.1) do
         # Uyarı elementi çıkarsa bulur ve işlem yaparız
         button = driver.find_element(:id, 'com.abonesepeti.app:id/btndDismissDialog')
         if button.displayed?
