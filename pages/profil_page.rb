@@ -63,7 +63,6 @@ class ProfilPage
       puts "Beklenmeyen bir hata oluştu: #{e.message}"
     end
   end
-  
 
   def sifreniz_basarili_bir_sekilde_degistirildi_uyarisini_dogrular
     element = nil
