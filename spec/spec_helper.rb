@@ -1,14 +1,13 @@
-# spec_helper.rb
-#
-# Different from test_helper.rb in up directory, this is a speical file to configure RSpec execution.
-# This one tell RSpec include stdout and stderr in test report.
-#
+require 'ci_reporter/rspec'
 
-# if use below, ci/rspec_reporter does not get output
-# only when run in BuildWise Agent, catpure output in result junit xml files
-if ENV["RUN_IN_BUILDWISE_AGENT"] == "true"
-  RSpec.configure do |config|
-    # register around filter that captures stdout and stderr
+RSpec.configure do |config|
+  # CI Reporter'ı başlatmak için yapılandırma
+  config.before(:suite) do
+    CiReporter::RSpec.configure
+  end
+
+  # Eğer BuildWise Agent ortamında çalışıyorsa stdout ve stderr'yi yakala
+  if ENV["RUN_IN_BUILDWISE_AGENT"] == "true"
     config.around(:each) do |example|
       stdout, stderr = StringIO.new, StringIO.new
       $stdout, $stderr = stdout, stderr
@@ -22,6 +21,7 @@ if ENV["RUN_IN_BUILDWISE_AGENT"] == "true"
       $stderr = STDERR
     end
 
+    # Allure raporu oluşturmak için formatter ekle
     config.add_formatter AllureRubyRSpec::Formatter, "allure-results"
   end
 end
