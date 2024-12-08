@@ -19,6 +19,7 @@ require 'json'
 require 'faker'
 require 'chunky_png'
 require 'base64'
+require 'allure-rspec'
 
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   include MyUtils
@@ -35,7 +36,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     @driver.quit if @driver
   end
 
-  it 'Kullanici Aboneliklerim sayfasında abonelikler görüntülenebilmeli,hane ve kişi filtrelemesi yapılabilmeli.' do
+  it 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli' do
     sleep 5 # uygulama başlaması için
     MainPage.new
     login_page = LoginPage.new
@@ -44,13 +45,9 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     login_page.giris_sayfasini_bekle
     login_page.giris_yap_click
-
     login_page.sifremi_unuttum_sayfasini_bekle
-
     login_page.e_posta_veya_telefon_numarasini_gir
-
     login_page.varsayılan_sifreyi_gir
-
     login_page.giris_yap_butonuna_tikla
 
     profil_page.surum_yenilik_uyarisini_kapat
@@ -60,7 +57,6 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.abonelikler_click
 
     haneler_page = HanelerPage.new
-
     haneler_page.hanelerime_tikla
     haneler_page.hane_ekleye_tikla
     haneler_page.hane_adı_yaz("test_hanesi")
@@ -84,11 +80,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     haneler_page.haneneyi_sil_butonuna_tikla
     haneler_page.evet_haneyi_sil_dialog_butonuna_bas
-
-    
-
     hane = haneler_page.hane_adinin_gorunmedigi_dogrula
-
     expect(hane.empty?).to be true
   end
 end
