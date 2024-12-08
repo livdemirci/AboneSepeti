@@ -16,5 +16,6 @@ gem 'rake'
 gem 'ci_reporter_rspec', '~> 1.0'
 # Diğer gem'lerinizi listeleyin
 gem 'httpclient'
+gem 'rspec_junit_formatter'
 
 # gemfile
