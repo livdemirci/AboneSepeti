@@ -22,8 +22,6 @@ if ENV["RUN_IN_BUILDWISE_AGENT"] == "true"
       $stderr = STDERR
     end
 
-    RSpec.configure do |config|
-      config.add_formatter 'AllureRspecFormatter'
-    end
+    config.add_formatter AllureRubyRSpec::Formatter, "allure-results"
   end
 end

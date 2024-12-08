@@ -21,7 +21,7 @@ require 'chunky_png'
 require 'base64'
 require 'allure-rspec'
 
-describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
+describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
   include MyUtils
   include TestHelper
   include AgilewayUtils
