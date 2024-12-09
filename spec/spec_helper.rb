@@ -1,11 +1,6 @@
-require 'ci_reporter/rspec'
+require 'rspec_junit_formatter'
 
 RSpec.configure do |config|
-  # CI Reporter'ı başlatmak için yapılandırma
-  config.before(:suite) do
-    CiReporter::RSpec.configure
-  end
-
   # Eğer BuildWise Agent ortamında çalışıyorsa stdout ve stderr'yi yakala
   if ENV["RUN_IN_BUILDWISE_AGENT"] == "true"
     config.around(:each) do |example|
@@ -25,3 +20,4 @@ RSpec.configure do |config|
     config.add_formatter AllureRubyRSpec::Formatter, "allure-results"
   end
 end
+
