@@ -19,7 +19,7 @@ require 'json'
 require 'faker'
 require 'chunky_png'
 require 'base64'
-require 'allure-rspec'
+
 
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   include MyUtils
@@ -87,7 +87,10 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     abonelikler_page.su_aboneliklerine_tikla
     abonelikler_page.abonelige_tikla
-
+    
+    
+    
+    abonelikler_page.fikirlerinizi_merak_ediyoruz_hayır_tikla
     evim_su = abonelikler_page.evim_suyu_bekle
 
     expect(evim_su).to include('Evim_Su')
