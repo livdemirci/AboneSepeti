@@ -1,13 +1,6 @@
 GEM
   remote: https://rubygems.org/
   specs:
-    allure-rspec (2.25.0)
-      allure-ruby-commons (= 2.25.0)
-      rspec-core (>= 3.8, < 4)
-    allure-ruby-commons (2.25.0)
-      mime-types (>= 3.3, < 4)
-      require_all (>= 2, < 4)
-      rspec-expectations (~> 3.12)
     appium_lib (15.2.2)
       appium_lib_core (~> 9.2, >= 9.2.1)
       nokogiri (~> 1.8, >= 1.8.1)
@@ -39,10 +32,6 @@ GEM
     json (2.7.2)
     logger (1.6.1)
     method_source (1.1.0)
-    mime-types (3.6.0)
-      logger
-      mime-types-data (~> 3.2015)
-    mime-types-data (3.2024.1203)
     nokogiri (1.16.7-x64-mingw-ucrt)
       racc (~> 1.4)
     nokogiri (1.16.7-x86_64-linux)
@@ -55,7 +44,6 @@ GEM
       method_source (~> 1.0)
     racc (1.8.1)
     rake (13.0.6)
-    require_all (3.0.0)
     rexml (3.3.7)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -90,7 +78,6 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  allure-rspec
   appium_lib
   appium_lib_core
   base64
@@ -103,7 +90,7 @@ DEPENDENCIES
   pry
   rake
   rspec
-  rspec_junit_formatter
+  rspec_junit_formatter (~> 0.6.0)
   selenium-webdriver
 
 BUNDLED WITH

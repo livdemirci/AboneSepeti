@@ -19,7 +19,7 @@ require 'json'
 require 'faker'
 require 'chunky_png'
 require 'base64'
-require 'allure-rspec'
+
 
 describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
   include MyUtils
