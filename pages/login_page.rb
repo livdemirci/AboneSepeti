@@ -1,11 +1,27 @@
 require_relative '../test_helper'
+
 class LoginPage
   include TestHelper
 
+  # Locators
+  GIRIS_YAP_BUTTON = { id: 'com.abonesepeti.app:id/btnSkip' }
+  LOGIN_BUTTON = { id: 'com.abonesepeti.app:id/btn_login' }
+  GIRIS_YAP_TEXT = { uiautomator: 'new UiSelector().text("Giriş Yap")' }
+  SIFREMI_UNUTTUM_TEXT = { uiautomator: 'new UiSelector().text("Şifremi Unuttum")' }
+  TELEFON_INPUT = { uiautomator: 'new UiSelector().text("Cep Telefonu")' }
+  EMAIL_TELEFON_INPUT = { uiautomator: 'new UiSelector().text("E-posta veya Telefon")' }
+  SIFRE_INPUT = { uiautomator: 'new UiSelector().text("Şifre")' }
+  KODU_GONDER_BUTTON = { uiautomator: 'new UiSelector().text("Kodu Gönder")' }
+  VERIFICATION_CODE_INPUT = { class_name: 'android.widget.EditText' }
+  DOGRULA_BUTTON = { uiautomator: 'new UiSelector().text("Doğrula")' }
+  SIFRE_ONAY_INPUT = { uiautomator: 'new UiSelector().text("Şifreyi Onayla")' }
+  SIFREYI_KAYDET_BUTTON = { uiautomator: 'new UiSelector().text("Şifreyi Kaydet")' }
+
+  # Page Methods
   def giris_yap_click
     giris_yap = nil
     try_for(9, 3) do
-      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btnSkip')
+      giris_yap = driver.find_element(GIRIS_YAP_BUTTON)
     end
     giris_yap.click
   end
@@ -13,25 +29,25 @@ class LoginPage
   def giris_yap_login_click
     giris_yap = nil
     try_for(9, 3) do
-      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btn_login')
+      giris_yap = driver.find_element(LOGIN_BUTTON)
     end
     giris_yap.click
   end
 
   def giris_sayfasini_bekle
-    wait = Selenium::WebDriver::Wait.new(timeout: 10) # 10 saniye
-    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Giriş Yap")') }
+    wait = Selenium::WebDriver::Wait.new(timeout: 10)
+    wait.until { driver.find_element(GIRIS_YAP_TEXT) }
   end
 
   def sifremi_unuttum_sayfasini_bekle
-    wait = Selenium::WebDriver::Wait.new(timeout: 15) # 10 saniye
-    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")') }
+    wait = Selenium::WebDriver::Wait.new(timeout: 15)
+    wait.until { driver.find_element(SIFREMI_UNUTTUM_TEXT) }
   end
 
   def sifremi_unuttum_click
     sifremi_unuttum = nil
     try_for(9, 3) do
-      sifremi_unuttum = driver.find_element(:uiautomator, 'new UiSelector().text("Şifremi Unuttum")')
+      sifremi_unuttum = driver.find_element(SIFREMI_UNUTTUM_TEXT)
     end
     sifremi_unuttum.click
   end
@@ -39,7 +55,7 @@ class LoginPage
   def telefon_numarasini_gir
     telefon = nil
     try_for(9, 3) do
-      telefon = driver.find_element(:uiautomator, 'new UiSelector().text("Cep Telefonu")')
+      telefon = driver.find_element(TELEFON_INPUT)
     end
     telefon.send_keys('5419539727')
   end
@@ -47,7 +63,7 @@ class LoginPage
   def e_posta_veya_telefon_numarasini_gir
     telefon = nil
     try_for(9, 3) do
-      telefon = driver.find_element(:uiautomator, 'new UiSelector().text("E-posta veya Telefon")')
+      telefon = driver.find_element(EMAIL_TELEFON_INPUT)
     end
     telefon.send_keys('5419539727')
   end
@@ -55,7 +71,7 @@ class LoginPage
   def varsayılan_sifreyi_gir
     sifre = nil
     try_for(9, 3) do
-      sifre = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
+      sifre = driver.find_element(SIFRE_INPUT)
     end
     sifre.send_keys('123456')
   end
@@ -63,13 +79,13 @@ class LoginPage
   def giris_yap_butonuna_tikla
     giris_yap = nil
     try_for(9, 3) do
-      giris_yap = driver.find_element(:id, 'com.abonesepeti.app:id/btn_login')
+      giris_yap = driver.find_element(LOGIN_BUTTON)
     end
     giris_yap.click
   end
 
   def kodu_gonder_click
-    kodu_gonder = driver.find_element(:uiautomator, 'new UiSelector().text("Kodu Gönder")')
+    kodu_gonder = driver.find_element(KODU_GONDER_BUTTON)
     kodu_gonder.click
   end
 
@@ -78,18 +94,18 @@ class LoginPage
 
     verification_code = Regexp.last_match(0)
     puts "Dogrulama kodu: #{verification_code}"
-    @verification_code = verification_code # Sınıf değişkenine atama
-    verification_code # Fonksiyonun geri döndürdüğü değer
+    @verification_code = verification_code
+    verification_code
   end
 
   def dogrulama_kodunu_gonder(verification_code)
-    driver.find_element(:class_name, 'android.widget.EditText').send_keys(verification_code)
+    driver.find_element(VERIFICATION_CODE_INPUT).send_keys(verification_code)
   end
 
   def dogrulaya_tiklat
-    wait = Selenium::WebDriver::Wait.new(timeout: 15) # 10 saniye
-    wait.until { driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")') }
-    dogrula = driver.find_element(:uiautomator, 'new UiSelector().text("Doğrula")')
+    wait = Selenium::WebDriver::Wait.new(timeout: 15)
+    wait.until { driver.find_element(DOGRULA_BUTTON) }
+    dogrula = driver.find_element(DOGRULA_BUTTON)
     dogrula.click
   end
 
@@ -98,35 +114,31 @@ class LoginPage
   end
 
   def sifre_alanina_rastgele_sifre_gir(sifre)
-    # Şifre alanına rastgele oluşturulan şifreyi gönder
-    sifre_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
-    sifre_input.send_keys(sifre)
+    sifre_alani = nil
+    try_for(9, 3) do
+      sifre_alani = driver.find_element(SIFRE_INPUT)
+    end
+    sifre_alani.send_keys(sifre)
   end
 
   def sifre_alanina_girdigin_ayni_sifreyi_gir(sifre)
-    # Şifreyi onaylamak için aynı şifreyi gönder
-    sifre_onay_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifreyi Onayla")')
+    sifre_onay_input = driver.find_element(SIFRE_ONAY_INPUT)
     sifre_onay_input.send_keys(sifre)
   end
 
   def sifreyi_kaydet_butonuna_tikla
-    # Şifreyi kaydet butonuna tıkla
-    sifreyi_kaydet_button = driver.find_element(:uiautomator, 'new UiSelector().text("Şifreyi Kaydet")')
+    sifreyi_kaydet_button = driver.find_element(SIFREYI_KAYDET_BUTTON)
     sifreyi_kaydet_button.click
   end
 
   def gelen_mesajlari_al
     sms_output = `adb shell am broadcast -a io.appium.settings.sms.read --es max 10`
-    # sms_output = `adb shell content query --uri content://sms/inbox --projection address,body,date --sort "date" --where "1=1"`
-    # puts "Latest SMS Output:\n#{sms_output}"
-
     if sms_output.empty?
       puts 'No messages found.'
       return nil
     else
       sms_lines = sms_output.lines
       if sms_lines.any?
-        # Son satırı al ve ayrıştır
         first_line = sms_lines.last
         if first_line =~ /address=(.*?), body=(.*?), date=(.*)/
           sender = Regexp.last_match(1)
@@ -134,7 +146,7 @@ class LoginPage
           { sender: sender, body: body }
           puts "Sender: #{sender}, Message: #{body}"
 
-          return body # Body değerini döndür
+          return body
         end
       end
     end
@@ -146,42 +158,35 @@ class LoginPage
     start_time = Time.now
 
     while Time.now - start_time <= timeout
-      # SMS verilerini çek
       data = driver.execute_script('mobile: listSms', { max: 1 }).to_s
 
-      # OTP desenini regex ile eşleştir
       matcher = Regexp.new(otp_pattern).match(data)
 
       if matcher
-        return matcher[1] # Eşleşen ilk grup (1. grup)
+        return matcher[1]
       end
 
-      # Belirli bir süre bekle (polling)
       sleep(1)
     end
 
-    nil # OTP bulunamazsa
+    nil
   end
 
   def kullanici_sifresini_gir(sifre = '123456')
-    sifre_input = driver.find_element(:uiautomator, 'new UiSelector().text("Şifre")')
+    sifre_input = driver.find_element(SIFRE_INPUT)
     sifre_input.send_keys(sifre)
   end
 
   def version_uyarisini_kapat
     begin
-      # Elemanı bulmaya ve işlem yapmaya çalış
       try_for(3, 0.1) do
-        button = driver.find_element(:uiautomator,
-                                     'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")')
+        button = driver.find_element({ uiautomator: 'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")' })
         button.click if button.displayed?
         puts 'Versiyon uyarısı kapatıldı!'
       end
     rescue Selenium::WebDriver::Error::NoSuchElementError
-      # Eleman bulunamazsa sessizce devam et
       puts 'Versiyon uyarısı bulunamadı, devam ediliyor...'
     rescue => e
-      # Diğer beklenmeyen hataları logla
       puts "Beklenmeyen bir hata oluştu: #{e.message}"
     end
   end
