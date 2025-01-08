@@ -1,48 +1,37 @@
-# require 'rubygems'
+require 'rubygems'
 gem 'appium_lib'
 require 'appium_lib'
 require 'rspec'
 require_relative './agileway_utils'
+require_relative './config/base_config'
 
 module TestHelper
   include AgilewayUtils
   include TestWiseRuntimeSupport if defined?(TestWiseRuntimeSupport)
 
+  def setup
+    @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
+    Appium.promote_appium_methods(Object)
+  end
+
   def driver
     @driver
   end
 
+  def teardown
+    @driver&.quit
+  end
+
+  def wait_true(timeout = BaseConfig.wait_time)
+    Selenium::WebDriver::Wait.new(timeout: timeout).until { yield }
+  end
+
+  def wait_false(timeout = BaseConfig.wait_time)
+    Selenium::WebDriver::Wait.new(timeout: timeout).until { !yield }
+  end
+
   def app_id
     ''
-  end
-
-  # for Appium v1
-  def app_caps
-    {
-      caps: {
-        platformName: 'Windows',
-        platform: 'Windows',
-        deviceName: 'MyPC',
-        app: app_id
-      },
-      appium_lib: { wait: 0.5 }
-    }
-  end
-
-  def android_caps
-    @caps = {
-      caps: {
-        platformName: 'Android',
-        deviceName: 'c2a1b4cc',
-        appPackage: 'com.abonesepeti.app',
-        appActivity: 'com.abonesepeti.presentation.main.MainActivity',
-        automationName: 'UiAutomator2'
-      },
-      appium_lib: {
-        server_url: 'http://127.0.0.1:4723',
-        wait_timeout: 30_000
-      }
-    }
   end
 
   # for Appium v2, mouse and action chains not working well yet due to winappdriver

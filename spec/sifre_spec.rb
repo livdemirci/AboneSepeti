@@ -9,6 +9,7 @@ end
 require_relative '../test_helper'
 require_relative '../agileway_utils'
 require_relative '../my_utils'
+require_relative '../config/base_config'
 require 'bundler/setup'
 require 'rspec'
 require 'selenium-webdriver'
@@ -20,14 +21,15 @@ require 'faker'
 require 'chunky_png'
 require 'base64'
 
-
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   include MyUtils
   include TestHelper
   include AgilewayUtils
+
   before(:all) do
-    @driver = Appium::Driver.new(android_caps, true).start_driver
-    # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
+   
+    BaseConfig.device_type = 'xiaomi'
+    @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
   end
 

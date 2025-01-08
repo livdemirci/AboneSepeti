@@ -27,9 +27,9 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
   include AgilewayUtils
 
   before(:all) do
-    Appium::Driver.new(android_caps, true).start_driver
+    BaseConfig.device_type = 'xiaomi'
+    @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
-    # @driver.manage.timeouts.implicit_wait = 10 # saniye cinsinden
   end
 
   after(:all) do

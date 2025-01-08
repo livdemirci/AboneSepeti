@@ -18,4 +18,10 @@ gem 'ci_reporter_rspec', '~> 1.0'
 gem 'httpclient'
 gem 'rspec_junit_formatter', '~> 0.6.0'
 
+group :development do
+  gem 'solargraph'
+  gem 'rubocop'
+  gem 'yard'
+end
+
 # gemfile

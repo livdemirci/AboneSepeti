@@ -1,0 +1,78 @@
+default: &default
+  caps:
+    platformName: "Android"
+    deviceName: "Test Automation"
+    platformVersion: ""
+    automationName: "UiAutomator2"
+    udid: ""
+    appPackage: "com.abonesepeti.app"
+    appActivity: "com.abonesepeti.presentation.main.MainActivity"
+  appium_lib:
+    server_url: "http://0.0.0.0:4723"
+    wait_timeout: 30
+    wait_interval: 0.5
+
+local:
+  <<: *default
+  caps:
+    platformName: "Android"
+    deviceName: "Test Automation"
+    platformVersion: "12"
+    automationName: "UiAutomator2"
+    udid: "c2a1b4cc"
+    appPackage: "com.abonesepeti.app"
+    appActivity: "com.abonesepeti.presentation.main.MainActivity"
+
+# Gerçek Cihaz - Xiaomi
+xiaomi:
+  <<: *default
+  caps:
+    platformName: "Android"
+    deviceName: "Xiaomi"
+    platformVersion: "12"
+    automationName: "UiAutomator2"
+    udid: "c2a1b4cc"
+    appPackage: "com.abonesepeti.app"
+    appActivity: "com.abonesepeti.presentation.main.MainActivity"
+  appium_lib:
+    server_url: "http://0.0.0.0:4723"
+    wait_timeout: 30
+    wait_interval: 0.5
+
+# Sanal Cihaz - Emulator
+emulator:
+  <<: *default
+  caps:
+    platformName: "Android"
+    deviceName: "Medium_Phone_API_35"
+    platformVersion: "14"
+    automationName: "UiAutomator2"
+    udid: "emulator-5554"
+    appPackage: "com.abonesepeti.app"
+    appActivity: "com.abonesepeti.presentation.main.MainActivity"
+    avd: "Medium_Phone_API_35"
+    autoGrantPermissions: true
+    grantPermissions: true
+    permissions: '{"com.abonesepeti.app": {"android.permission.POST_NOTIFICATIONS": "granted"}}'
+  appium_lib:
+    server_url: "http://0.0.0.0:4723"
+    wait_timeout: 30
+    wait_interval: 0.5
+
+samsung:
+  <<: *default
+  caps:
+    platformName: "Android"
+    deviceName: "Samsung"
+    platformVersion: "13"
+    automationName: "UiAutomator2"
+    udid: "SAMSUNG_DEVICE_ID" # Samsung cihazınızın UDID'sini buraya yazın
+    appPackage: "com.abonesepeti.app"
+    appActivity: "com.abonesepeti.presentation.main.MainActivity"
+  appium_lib:
+    server_url: "http://0.0.0.0:4723"
+    wait_timeout: 30
+    wait_interval: 0.5
+
+cloud:
+  <<: *default
