@@ -148,3 +148,148 @@ task 'test:stats' do
   puts '| TOTAL      | ' + total_lines.to_s.rjust(7) + ' |         |         |' + total_code_lines.to_s.rjust(7) + ' |'
   puts '+------------+---------+---------+---------+--------+'
 end
+
+desc 'Testleri paralel çalıştır'
+task :parallel_tests do
+  require 'parallel'
+  require 'yaml'
+  require_relative 'config/base_config'
+  require 'appium_lib'
+  
+  # Appium yapılandırmasını yükle
+  appium_config = YAML.load_file(File.join(File.dirname(__FILE__), 'config/appium.yml'), aliases: true)
+  device_configs = appium_config.select { |k,v| k != 'default' }
+  
+  # Bağlı cihazları al
+  connected_devices = `adb devices`.split("\n")[1..-1]&.map { |line| line.split[0] }&.compact || []
+  
+  if connected_devices.empty?
+    puts "Hata: Bağlı cihaz bulunamadı!"
+    exit 1
+  end
+  
+  # Cihazları tipine göre ayır
+  emulator_devices = connected_devices.select { |device| device.start_with?('emulator-') }
+  real_devices = connected_devices - emulator_devices
+  
+  puts "Bağlı cihazlar:"
+  puts "- Emülatörler: #{emulator_devices.join(', ')}"
+  puts "- Fiziksel cihazlar: #{real_devices.join(', ')}"
+  
+  # Test dosyalarını bul
+  spec_files = Dir.glob("#{$test_dir}/**/*_spec.rb") - excluded_spec_files.map { |f| File.join($test_dir, f) }
+  
+  # Device type'lara göre uygun cihazları eşle
+  device_type_mapping = {}
+  
+  device_configs.each do |config_name, config|
+    if config_name == 'emulator'
+      device_type_mapping[config_name] = emulator_devices
+    else
+      device_type_mapping[config_name] = real_devices
+    end
+  end
+  
+  puts "\nDevice type eşleşmeleri:"
+  device_type_mapping.each do |type, devices|
+    puts "- #{type}: #{devices.join(', ')}"
+  end
+  
+  # Test-cihaz çiftlerini oluştur
+  device_test_groups = {}
+  
+  spec_files.each do |spec_file|
+    content = File.read(spec_file)
+    if match = content.match(/BaseConfig\.device_type\s*=\s*['"]([^'"]+)['"]/)
+      device_type = match[1]
+      
+      if device_type_mapping[device_type]&.any?
+        # Bu device type için mevcut cihazlardan birini seç
+        available_devices = device_type_mapping[device_type]
+        device = available_devices.first
+        
+        device_test_groups[device] ||= {
+          device_type: device_type,
+          tests: []
+        }
+        device_test_groups[device][:tests] << spec_file
+      else
+        puts "Uyarı: '#{device_type}' tipi için uygun cihaz bulunamadı: #{File.basename(spec_file)}"
+      end
+    else
+      puts "Uyarı: Device type bulunamadı: #{File.basename(spec_file)}"
+    end
+  end
+  
+  if device_test_groups.empty?
+    puts "Hata: Çalıştırılacak test bulunamadı!"
+    exit 1
+  end
+  
+  puts "\nTest dağılımı:"
+  device_test_groups.each do |device, group|
+    puts "- #{device} (#{group[:device_type]}):"
+    group[:tests].each do |test|
+      puts "  - #{File.basename(test)}"
+    end
+  end
+  
+  # Her cihaz için bir Appium server başlat
+  begin
+    device_servers = {}
+    
+    device_test_groups.each_with_index do |(device, group), index|
+      port = 4723 + index
+      puts "\n[Device: #{device} (#{group[:device_type]})] Appium server başlatılıyor (Port: #{port})"
+      
+      # Appium server'ı başlat
+      server_cmd = "appium -p #{port} --allow-insecure chromedriver_autodownload > appium_#{port}.log 2>&1 &"
+      system(server_cmd)
+      sleep 15 # Server'ın başlaması için bekle
+      
+      device_servers[device] = port
+      puts "[Device: #{device} (#{group[:device_type]})] Appium server hazır"
+    end
+    
+    # Her cihaz için testleri paralel çalıştır
+    Parallel.each(device_test_groups) do |device, group|
+      port = device_servers[device]
+      system_port = 8200 + device_servers.keys.index(device)
+      
+      # Test için gerekli ortam değişkenlerini ayarla
+      ENV['APPIUM_PORT'] = port.to_s
+      ENV['SYSTEM_PORT'] = system_port.to_s
+      ENV['UDID'] = device
+      ENV['DEVICE_TYPE'] = group[:device_type]
+      
+      group[:tests].each do |spec_file|
+        puts "\n[Device: #{device} (#{group[:device_type]})] #{File.basename(spec_file)} çalıştırılıyor"
+        
+        # Uygulama süreçlerini temizle
+        system("adb -s #{device} shell pm clear com.abonesepeti.app")
+        sleep 2
+        
+        # RSpec komutunu çalıştır
+        rspec_cmd = <<~RUBY
+          bundle exec ruby -e '
+            require "rspec"
+            require "appium_lib"
+            
+            # RSpec çalıştır
+            RSpec::Core::Runner.run(["#{spec_file}"], $stderr, $stdout)
+          '
+        RUBY
+        
+        system(rspec_cmd)
+      end
+    end
+    
+  ensure
+    # Tüm Appium server'ları kapat
+    device_servers.each do |device, port|
+      puts "\n[Device: #{device}] Appium server kapatılıyor (Port: #{port})"
+      system("pkill -f 'appium.*#{port}'")
+      system("rm -f appium_#{port}.log")
+    end
+  end
+end

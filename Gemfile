@@ -25,3 +25,5 @@ group :development do
 end
 
 # gemfile
+
+gem "parallel", "~> 1.26"

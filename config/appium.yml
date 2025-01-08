@@ -66,7 +66,7 @@ samsung:
     deviceName: "Samsung"
     platformVersion: "13"
     automationName: "UiAutomator2"
-    udid: "SAMSUNG_DEVICE_ID" # Samsung cihazınızın UDID'sini buraya yazın
+    udid: "samsung-device-id"
     appPackage: "com.abonesepeti.app"
     appActivity: "com.abonesepeti.presentation.main.MainActivity"
   appium_lib:
