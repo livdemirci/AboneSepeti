@@ -155,33 +155,50 @@ task :parallel_tests do
   require 'yaml'
   require_relative 'config/base_config'
   require 'appium_lib'
+  require 'rspec/core'
+  require 'ci/reporter/rspec'
+  require 'nokogiri'
+
+  # Ortam seçimini al (varsayılan: preprod)
+  environment = ENV['ENV'] || 'preprod'
+  BaseConfig.environment = environment
   
+  puts "Test ortamı: #{environment}"
+
+  timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
+  report_dir = "reports/#{timestamp}"
+  FileUtils.mkdir_p(report_dir)
+
+  # Configure RSpec formatters for extended reporting
+  ENV['CI_REPORTS'] = report_dir
+  ENV['SPEC_OPTS'] = "--format html --out #{report_dir}/test_report_%{spec_name}.html"
+
   # Appium yapılandırmasını yükle
   appium_config = YAML.load_file(File.join(File.dirname(__FILE__), 'config/appium.yml'), aliases: true)
-  device_configs = appium_config.select { |k,v| k != 'default' }
-  
+  device_configs = appium_config.select { |k, v| k != 'default' }
+
   # Bağlı cihazları al
   connected_devices = `adb devices`.split("\n")[1..-1]&.map { |line| line.split[0] }&.compact || []
-  
+
   if connected_devices.empty?
     puts "Hata: Bağlı cihaz bulunamadı!"
     exit 1
   end
-  
+
   # Cihazları tipine göre ayır
   emulator_devices = connected_devices.select { |device| device.start_with?('emulator-') }
   real_devices = connected_devices - emulator_devices
-  
+
   puts "Bağlı cihazlar:"
   puts "- Emülatörler: #{emulator_devices.join(', ')}"
   puts "- Fiziksel cihazlar: #{real_devices.join(', ')}"
-  
+
   # Test dosyalarını bul
   spec_files = Dir.glob("#{$test_dir}/**/*_spec.rb") - excluded_spec_files.map { |f| File.join($test_dir, f) }
-  
+
   # Device type'lara göre uygun cihazları eşle
   device_type_mapping = {}
-  
+
   device_configs.each do |config_name, config|
     if config_name == 'emulator'
       device_type_mapping[config_name] = emulator_devices
@@ -189,25 +206,25 @@ task :parallel_tests do
       device_type_mapping[config_name] = real_devices
     end
   end
-  
+
   puts "\nDevice type eşleşmeleri:"
   device_type_mapping.each do |type, devices|
     puts "- #{type}: #{devices.join(', ')}"
   end
-  
+
   # Test-cihaz çiftlerini oluştur
   device_test_groups = {}
-  
+
   spec_files.each do |spec_file|
     content = File.read(spec_file)
     if match = content.match(/BaseConfig\.device_type\s*=\s*['"]([^'"]+)['"]/)
       device_type = match[1]
-      
+
       if device_type_mapping[device_type]&.any?
         # Bu device type için mevcut cihazlardan birini seç
         available_devices = device_type_mapping[device_type]
         device = available_devices.first
-        
+
         device_test_groups[device] ||= {
           device_type: device_type,
           tests: []
@@ -220,12 +237,12 @@ task :parallel_tests do
       puts "Uyarı: Device type bulunamadı: #{File.basename(spec_file)}"
     end
   end
-  
+
   if device_test_groups.empty?
     puts "Hata: Çalıştırılacak test bulunamadı!"
     exit 1
   end
-  
+
   puts "\nTest dağılımı:"
   device_test_groups.each do |device, group|
     puts "- #{device} (#{group[:device_type]}):"
@@ -233,57 +250,59 @@ task :parallel_tests do
       puts "  - #{File.basename(test)}"
     end
   end
-  
+
   # Her cihaz için bir Appium server başlat
   begin
     device_servers = {}
-    
+
     device_test_groups.each_with_index do |(device, group), index|
       port = 4723 + index
       puts "\n[Device: #{device} (#{group[:device_type]})] Appium server başlatılıyor (Port: #{port})"
-      
+
       # Appium server'ı başlat
       server_cmd = "appium -p #{port} --allow-insecure chromedriver_autodownload > appium_#{port}.log 2>&1 &"
       system(server_cmd)
       sleep 15 # Server'ın başlaması için bekle
-      
+
       device_servers[device] = port
       puts "[Device: #{device} (#{group[:device_type]})] Appium server hazır"
     end
-    
+
     # Her cihaz için testleri paralel çalıştır
     Parallel.each(device_test_groups) do |device, group|
       port = device_servers[device]
       system_port = 8200 + device_servers.keys.index(device)
-      
+
       # Test için gerekli ortam değişkenlerini ayarla
       ENV['APPIUM_PORT'] = port.to_s
       ENV['SYSTEM_PORT'] = system_port.to_s
       ENV['UDID'] = device
       ENV['DEVICE_TYPE'] = group[:device_type]
-      
+
       group[:tests].each do |spec_file|
-        puts "\n[Device: #{device} (#{group[:device_type]})] #{File.basename(spec_file)} çalıştırılıyor"
-        
+        spec_name = File.basename(spec_file, '.rb')
+        puts "\n[Device: #{device} (#{group[:device_type]})] #{spec_name} çalıştırılıyor"
+
         # Uygulama süreçlerini temizle
         system("adb -s #{device} shell pm clear com.abonesepeti.app")
         sleep 2
-        
+
         # RSpec komutunu çalıştır
         rspec_cmd = <<~RUBY
           bundle exec ruby -e '
             require "rspec"
             require "appium_lib"
-            
+          #{'  '}
+            ENV["SPEC_OPTS"] = "--format html --out #{report_dir}/test_report_#{spec_name}.html"
+          #{'  '}
             # RSpec çalıştır
             RSpec::Core::Runner.run(["#{spec_file}"], $stderr, $stdout)
           '
         RUBY
-        
+
         system(rspec_cmd)
       end
     end
-    
   ensure
     # Tüm Appium server'ları kapat
     device_servers.each do |device, port|
@@ -291,5 +310,289 @@ task :parallel_tests do
       system("pkill -f 'appium.*#{port}'")
       system("rm -f appium_#{port}.log")
     end
+    
+    # Raporları birleştir
+    puts "\nRaporlar birleştiriliyor..."
+    Rake::Task["merge_reports"].invoke
   end
+
+  # Paralel testler tamamlandıktan sonra raporları birleştir
+end
+
+desc 'Merge test reports'
+task :merge_reports do
+  require 'nokogiri'
+  
+  # En son çalışan testlerin dizinini bul
+  latest_report_dir = Dir.glob("reports/*").max_by { |f| File.mtime(f) }
+  
+  if !latest_report_dir || !File.directory?(latest_report_dir)
+    puts "Rapor dizini bulunamadı"
+    next
+  end
+  
+  puts "En son rapor dizini: #{latest_report_dir}"
+  
+  # En son dizindeki HTML dosyalarını bul
+  html_files = Dir.glob("#{latest_report_dir}/test_report_*_spec.html")
+  
+  if html_files.empty?
+    puts "Birleştirilecek HTML rapor bulunamadı"
+    next
+  end
+  
+  # İlk dosyayı temel olarak al
+  base_html = File.read(html_files.first)
+  merged_doc = Nokogiri::HTML(base_html)
+  
+  # Test gruplarını toplayacağımız div
+  main_div = merged_doc.at_css('#div_group_1')
+  return unless main_div
+  
+  total_examples = 0
+  total_failures = 0
+  failed_examples = []
+  passed_examples = []
+  
+  # Her HTML dosyasını işle
+  html_files.each do |file|
+    spec_name = File.basename(file, '.html').sub('test_report_', '')
+    puts "Rapor birleştiriliyor: #{spec_name}"
+    
+    doc = Nokogiri::HTML(File.read(file))
+    
+    # Test gruplarını topla
+    doc.css('.example_group').each do |group|
+      # Başarısız testleri bul
+      if group['class'].include?('failed')
+        # Ekran görüntüsünü kontrol et
+        example_div = group.at_css('.example.failed')
+        if example_div
+          screenshot_path = example_div['data-screenshot']
+          if screenshot_path && File.exist?(screenshot_path)
+            # Ekran görüntüsünü rapora ekle
+            img_tag = doc.create_element('img', 
+              src: "data:image/png;base64,#{Base64.strict_encode64(File.read(screenshot_path))}", 
+              class: 'failure-screenshot',
+              style: 'max-width: 800px; border: 2px solid red; margin: 10px 0;'
+            )
+            example_div.add_child(img_tag)
+          end
+        end
+        
+        failed_examples << group
+        total_failures += 1
+      else
+        passed_examples << group
+      end
+      total_examples += 1
+    end
+  end
+  
+  # Test sonuçlarını birleştir
+  main_div.inner_html = ''
+  
+  # Önce başarısız testleri ekle
+  failed_examples.each do |example|
+    main_div.add_child(example)
+  end
+  
+  # Sonra başarılı testleri ekle
+  passed_examples.each do |example|
+    main_div.add_child(example)
+  end
+  
+  # Başlık ve durum bilgisini güncelle
+  if total_failures > 0
+    merged_doc.at_css('#rspec-header')['class'] = 'failed'
+    merged_doc.at_css('#div_group_1')['class'] = 'example_group failed'
+  else
+    merged_doc.at_css('#rspec-header')['class'] = 'passed'
+    merged_doc.at_css('#div_group_1')['class'] = 'example_group passed'
+  end
+  
+  # Birleştirilmiş raporu kaydet
+  output_file = "#{latest_report_dir}/merged_report.html"
+  File.write(output_file, merged_doc.to_html)
+  
+  puts "\nBirleştirme tamamlandı!"
+  puts "Toplam test sayısı: #{total_examples}"
+  puts "Başarısız test sayısı: #{total_failures}"
+  puts "Başarılı test sayısı: #{total_examples - total_failures}"
+  puts "Birleştirilmiş rapor: #{output_file}"
+end
+
+desc 'Merge CI Reporter test reports'
+task :merge_ci_reports do
+  require 'nokogiri'
+
+  report_dir = Dir.glob("reports/*").max_by { |f| File.mtime(f) }
+  if report_dir && File.directory?(report_dir)
+    puts "En son rapor dizini: #{report_dir}"
+
+    # XML dosyalarını bul (hem SPEC-*.xml hem de birlesik_rapor.xml)
+    xml_files = Dir.glob("#{report_dir}/*.xml")
+
+    if xml_files.empty?
+      puts "Birleştirilecek XML rapor bulunamadı"
+      next
+    end
+
+    # Birleştirilmiş rapor için yeni bir XML belgesi oluştur
+    merged_doc = Nokogiri::XML('<testsuite></testsuite>')
+    merged_suite = merged_doc.at_css('testsuite')
+
+    total_tests = 0
+    total_failures = 0
+    total_errors = 0
+    total_time = 0.0
+
+    # Her XML dosyasını işle
+    xml_files.each do |file|
+      puts "Rapor birleştiriliyor: #{File.basename(file)}"
+      doc = Nokogiri::XML(File.read(file))
+      suite = doc.at_css('testsuite')
+
+      next unless suite
+
+      # İstatistikleri topla
+      total_tests += suite['tests'].to_i
+      total_failures += suite['failures'].to_i
+      total_errors += (suite['errors'] || '0').to_i
+      total_time += (suite['time'] || '0').to_f
+
+      # Test durumlarını birleştirilmiş rapora ekle
+      suite.css('testcase').each do |testcase|
+        merged_suite.add_child(testcase.dup)
+      end
+    end
+
+    # Birleştirilmiş istatistikleri ayarla
+    merged_suite['tests'] = total_tests.to_s
+    merged_suite['failures'] = total_failures.to_s
+    merged_suite['errors'] = total_errors.to_s
+    merged_suite['time'] = total_time.to_s
+    merged_suite['name'] = 'Birleştirilmiş Test Sonuçları'
+
+    # Birleştirilmiş raporu kaydet
+    output_file = "#{report_dir}/merged_ci_report.xml"
+    File.write(output_file, merged_doc.to_xml(indent: 2))
+
+    puts "\nBirleştirme tamamlandı!"
+    puts "Toplam test sayısı: #{total_tests}"
+    puts "Toplam hata sayısı: #{total_failures}"
+    puts "Toplam error sayısı: #{total_errors}"
+    puts "Toplam süre: #{total_time.round(2)} saniye"
+    puts "Birleştirilmiş rapor: #{output_file}"
+  else
+    puts "Rapor klasörü bulunamadı"
+  end
+end
+
+require 'json'
+require 'erb'
+require 'parallel_tests'
+require 'fileutils'
+
+namespace :test do
+  desc "Run tests in parallel and create separate reports"
+  task :parallel do
+    # Rapor dizinlerini oluştur
+    FileUtils.mkdir_p('test-output/reports')
+    FileUtils.mkdir_p('test-output/html')
+
+    # Paralel testleri çalıştır
+    system("parallel_rspec --serialize-stdout --group-by runtime spec/")
+  end
+end
+
+namespace :reports do
+  desc "Merge multiple JSON reports into one"
+  task :merge do
+    report_dir = 'test-output/reports'
+    merged_report_path = 'test-output/merged_report.json'
+
+    merged_report = { tests: [] }
+
+    Dir["#{report_dir}/*.json"].each do |file|
+      report_data = JSON.parse(File.read(file))
+      merged_report[:tests].concat(report_data['tests'])
+    end
+
+    File.open(merged_report_path, 'w') do |file|
+      file.write(JSON.pretty_generate(merged_report))
+    end
+
+    puts "Merged report created at #{merged_report_path}"
+  end
+
+  desc "Generate an HTML report from the merged JSON report"
+  task :generate_html do
+    merged_report_path = 'test-output/merged_report.json'
+    html_report_path = 'test-output/html/index.html'
+
+    report_data = JSON.parse(File.read(merged_report_path))
+    template = <<~HTML
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Test Report</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 20px; }
+          table { border-collapse: collapse; width: 100%; }
+          th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+          th { background-color: #f2f2f2; }
+          .pass { color: green; }
+          .fail { color: red; }
+        </style>
+      </head>
+      <body>
+        <h1>Test Report</h1>
+        <table>
+          <tr>
+            <th>Test Name</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>Details</th>
+          </tr>
+          <% report_data['tests'].each do |test| %>
+            <tr>
+              <td><%= test['name'] %></td>
+              <td class="<%= test['status'].downcase %>"><%= test['status'] %></td>
+              <td><%= test['duration'] %>s</td>
+              <td><%= test['details'] %></td>
+            </tr>
+          <% end %>
+        </table>
+      </body>
+      </html>
+    HTML
+
+    renderer = ERB.new(template)
+    result = renderer.result(binding)
+
+    File.open(html_report_path, 'w') do |file|
+      file.write(result)
+    end
+
+    puts "HTML report created at #{html_report_path}"
+  end
+end
+
+desc "Run all tests and generate reports"
+task :test_with_reports => ["test:parallel", "reports:merge", "reports:generate_html"]
+
+desc 'Run tests in parallel in preprod environment'
+task :parallel_preprod, [:processes] do |t, args|
+  ENV['ENV'] = 'preprod'
+  processes = args[:processes] ? "-n #{args[:processes]}" : ""
+  system("parallel_rspec #{processes} spec/")
+end
+
+desc 'Run specific tests in parallel in preprod environment'
+task :parallel_preprod_spec, [:spec_path, :processes] do |t, args|
+  ENV['ENV'] = 'preprod'
+  spec_path = args[:spec_path] || 'spec/'
+  processes = args[:processes] ? "-n #{args[:processes]}" : ""
+  system("parallel_rspec #{processes} #{spec_path}")
 end

@@ -14,9 +14,37 @@ RSpec.configure do |config|
 
       $stdout = STDOUT
       $stderr = STDERR
+
+  
+     
+    end
+
+    # Test başarısız olduğunda ekran görüntüsü al
+    config.after(:each) do |example|
+      if example.exception
+        timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
+        screenshot_name = "screenshot_#{example.description.gsub(/\s+/, '_')}_#{timestamp}.png"
+        screenshot_path = File.join('reports', screenshot_name)
+
+        # Ekran görüntüsünü al
+        $driver.save_screenshot(screenshot_path)
+
+        # HTML rapora ekran görüntüsünü ekle
+        example.metadata[:screenshot] = screenshot_path
+      end
+    end
+
+    config.before(:all) do
+      # Environment ve device type ayarlarını yap
+      BaseConfig.environment = ENV['ENV'] || 'preprod'
+      BaseConfig.device_type = ENV['DEVICE_TYPE'] || 'emulator'
+      puts "Test environment: #{BaseConfig.environment}"
+      puts "Device type: #{BaseConfig.device_type}"
     end
 
     # Allure raporu oluşturmak için formatter ekle
     config.add_formatter AllureRubyRSpec::Formatter, "allure-results"
   end
+
+  
 end

@@ -196,7 +196,7 @@ class AboneliklerPage
 
   def toast_mesajı_bekle
     text = nil
-    try_for(5, 0.1) do
+    try_for(10, 0.2) do
       text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text

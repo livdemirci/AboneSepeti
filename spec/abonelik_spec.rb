@@ -20,7 +20,6 @@ require 'faker'
 require 'chunky_png'
 require 'base64'
 
-
 describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli ködü girip yeni şifreyi onaylamalı ve kaydetmelidir.' do
   include MyUtils
   include TestHelper
@@ -33,6 +32,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   end
 
   after(:all) do
+    sleep 1
     @driver.quit if @driver
   end
 
@@ -87,9 +87,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
 
     abonelikler_page.su_aboneliklerine_tikla
     abonelikler_page.abonelige_tikla
-    
-    
-    
+
     abonelikler_page.fikirlerinizi_merak_ediyoruz_hayır_tikla
     evim_su = abonelikler_page.evim_suyu_bekle
 

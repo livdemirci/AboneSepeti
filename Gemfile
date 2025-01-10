@@ -17,6 +17,7 @@ gem 'ci_reporter_rspec', '~> 1.0'
 # Diğer gem'lerinizi listeleyin
 gem 'httpclient'
 gem 'rspec_junit_formatter', '~> 0.6.0'
+gem 'nokogiri', '~> 1.15.0'
 
 group :development do
   gem 'solargraph'
@@ -27,3 +28,4 @@ end
 # gemfile
 
 gem "parallel", "~> 1.26"
+gem 'parallel_tests'

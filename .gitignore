@@ -1,0 +1,27 @@
+# Reports
+reports/
+*.html
+*.json
+
+# Ruby
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/test/tmp/
+/test/version_tmp/
+/tmp/
+
+# Environment
+.env
+.env.*
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
