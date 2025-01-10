@@ -3,6 +3,10 @@ reports/
 *.html
 *.json
 
+# APK files
+config/apk/
+*.apk
+
 # Ruby
 *.gem
 *.rbc
