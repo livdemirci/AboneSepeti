@@ -18,7 +18,7 @@ gem 'ci_reporter_rspec', '~> 1.0'
 gem 'httpclient'
 gem 'rspec_junit_formatter', '~> 0.6.0'
 gem 'nokogiri', '~> 1.15.0'
-
+gem 'sinatra'
 group :development do
   gem 'solargraph'
   gem 'rubocop'

@@ -324,7 +324,7 @@ task :merge_reports do
   require 'nokogiri'
   
   # En son çalışan testlerin dizinini bul
-  latest_report_dir = Dir.glob("reports/*").max_by { |f| File.mtime(f) }
+  latest_report_dir = Dir.glob("spec/reports/*").max_by { |f| File.mtime(f) }
   
   if !latest_report_dir || !File.directory?(latest_report_dir)
     puts "Rapor dizini bulunamadı"
@@ -426,7 +426,7 @@ desc 'Merge CI Reporter test reports'
 task :merge_ci_reports do
   require 'nokogiri'
 
-  report_dir = Dir.glob("reports/*").max_by { |f| File.mtime(f) }
+  report_dir = Dir.glob("spec/reports/*").max_by { |f| File.mtime(f) }
   if report_dir && File.directory?(report_dir)
     puts "En son rapor dizini: #{report_dir}"
 
@@ -595,4 +595,32 @@ task :parallel_preprod_spec, [:spec_path, :processes] do |t, args|
   spec_path = args[:spec_path] || 'spec/'
   processes = args[:processes] ? "-n #{args[:processes]}" : ""
   system("parallel_rspec #{processes} #{spec_path}")
+end
+require 'nokogiri'
+
+desc 'XML raporlarını birleştirir'
+task :merge_xml_reports do
+  reports_dir = '/home/livde/AboneSepeti/spec/reports'
+  output_file = "#{reports_dir}/merged_report.xml"
+
+  # Tüm XML dosyalarını oku
+  xml_files = Dir.glob("#{reports_dir}/*.xml")
+  abort("XML dosyası bulunamadı: #{reports_dir}") if xml_files.empty?
+
+  puts "Birleştirilecek XML dosyaları:"
+  xml_files.each { |file| puts " - #{file}" }
+
+  # İlk XML dosyasını ana belge olarak kullan
+  main_doc = Nokogiri::XML(File.read(xml_files.shift))
+
+  # Diğer XML dosyalarının içeriğini ana belgeye ekle
+  xml_files.each do |file|
+    doc = Nokogiri::XML(File.read(file))
+    test_suites = doc.xpath('//testsuite') # 'testsuite' düğümlerini bul
+    test_suites.each { |suite| main_doc.root.add_child(suite) }
+  end
+
+  # Birleşik XML raporunu kaydet
+  File.write(output_file, main_doc.to_xml)
+  puts "Birleşik XML raporu oluşturuldu: #{output_file}"
 end

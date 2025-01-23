@@ -29,6 +29,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   before(:all) do
    
     BaseConfig.device_type = 'xiaomi'
+    BaseConfig.environment = 'preprod'
     @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
   end
@@ -107,5 +108,6 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     sleep 0.5
     profil_page.cikis_yap_click
     profil_page.evet_butonuna_tikla
+    sleep 2
   end
 end

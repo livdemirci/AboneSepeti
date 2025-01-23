@@ -3,17 +3,19 @@ xiaomi:
     caps:
       platformName: "Android"
       automationName: "UiAutomator2"
-      appPackage: "com.abonesepeti.app.test"
-      appActivity: "com.abonesepeti.presentation.main.MainActivity"
+      #appPackage: "com.abonesepeti.app.test"
+      #appActivity: "com.abonesepeti.presentation.main.MainActivity"
       deviceName: "Xiaomi"
       platformVersion: "12"
       udid: "c2a1b4cc"
-      app: config/apk/abonesepeti-2.0.1-test1.apk
+      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test2.apk"
+
+
     appium_lib:
       server_url: "http://0.0.0.0:4723"
       wait_timeout: 15
       wait_interval: 0.5
-
+ 
   prod:
     caps:
       platformName: "Android"
@@ -42,7 +44,7 @@ emulator:
       autoGrantPermissions: true
       grantPermissions: true
       permissions: '{"com.abonesepeti.app": {"android.permission.POST_NOTIFICATIONS": "granted"}}'
-      app: config/apk/abonesepeti-2.0.1-test1.apk
+      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test2.apk"
     appium_lib:
       server_url: "http://0.0.0.0:4723"
       wait_timeout: 15

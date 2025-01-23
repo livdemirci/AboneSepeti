@@ -4,8 +4,8 @@ class LoginPage
   include TestHelper
 
   # Locators
-  GIRIS_YAP_BUTTON = { id: 'com.abonesepeti.app:id/btnSkip' }
-  LOGIN_BUTTON = { id: 'com.abonesepeti.app:id/btn_login' }
+  GIRIS_YAP_BUTTON = { id: 'com.abonesepeti.app.test:id/btnSkip' }
+  LOGIN_BUTTON = { id: 'com.abonesepeti.app.test:id/btn_login' }
   GIRIS_YAP_TEXT = { uiautomator: 'new UiSelector().text("Giriş Yap")' }
   SIFREMI_UNUTTUM_TEXT = { uiautomator: 'new UiSelector().text("Şifremi Unuttum")' }
   TELEFON_INPUT = { uiautomator: 'new UiSelector().text("Cep Telefonu")' }
@@ -36,7 +36,7 @@ class LoginPage
 
   def giris_sayfasini_bekle
     wait = Selenium::WebDriver::Wait.new(timeout: 10)
-    wait.until { driver.find_element(GIRIS_YAP_TEXT) }
+    wait.until { driver.find_element(GIRIS_YAP_BUTTON) }
   end
 
   def sifremi_unuttum_sayfasini_bekle
@@ -77,7 +77,7 @@ class LoginPage
   end
 
   def giris_yap_butonuna_tikla
-    giris_yap = nil
+        giris_yap = nil
     try_for(9, 3) do
       giris_yap = driver.find_element(LOGIN_BUTTON)
     end
@@ -180,7 +180,7 @@ class LoginPage
   def version_uyarisini_kapat
     begin
       try_for(3, 0.1) do
-        button = driver.find_element({ uiautomator: 'new UiSelector().resourceId("com.abonesepeti.app:id/btn_positive_custom_dialog")' })
+        button = driver.find_element({ uiautomator: 'new UiSelector().resourceId("com.abonesepeti.app.test:id/btn_positive_custom_dialog")' })
         button.click if button.displayed?
         puts 'Versiyon uyarısı kapatıldı!'
       end

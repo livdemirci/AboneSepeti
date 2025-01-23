@@ -5,15 +5,15 @@ class ProfilPage
   include TestHelper
 
   # Locators
-  PROFIL_BUTTON = { id: 'com.abonesepeti.app:id/imgProfile' }
+  PROFIL_BUTTON = { id: 'com.abonesepeti.app.test:id/imgProfile' }
   AYARLAR_BUTTON = { uiautomator: 'new UiSelector().text("Ayarlar")' }
   SIFRE_DEGISTIR_BUTTON = { uiautomator: 'new UiSelector().text("Şifremi Değiştir")' }
   MEVCUT_SIFRE_INPUT = { uiautomator: 'new UiSelector().text("Mevcut Şifre")' }
   YENI_SIFRE_INPUT = { uiautomator: 'new UiSelector().text("Yeni Şifre")' }
   YENI_SIFRE_DOGRULAMA_INPUT = { uiautomator: 'new UiSelector().text("Yeni Şifre Doğrulama")' }
   KAYDET_BUTTON = { uiautomator: 'new UiSelector().text("Kaydet")' }
-  SURUM_UYARI_BUTTON = { id: 'com.abonesepeti.app:id/btndDismissDialog' }
-  SNACKBAR_TEXT = { id: 'com.abonesepeti.app:id/snackbar_text' }
+  SURUM_UYARI_BUTTON = { id: 'com.abonesepeti.app.test:id/btndDismissDialog' }
+  SNACKBAR_TEXT = { id: 'com.abonesepeti.app.test:id/snackbar_text' }
   CIKIS_YAP_BUTTON = { uiautomator: 'new UiSelector().text("Çıkış Yap")' }
   EVET_BUTTON = { uiautomator: 'new UiSelector().text("Evet")' }
 

@@ -27,7 +27,8 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
   include AgilewayUtils
 
   before(:all) do
-    BaseConfig.device_type = 'emulator'
+    BaseConfig.environment = 'preprod'
+    BaseConfig.device_type = 'xiaomi'
     @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
   end
@@ -58,7 +59,9 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
 
     haneler_page = HanelerPage.new
     haneler_page.hanelerime_tikla
+    
     haneler_page.hane_ekleye_tikla
+    
     haneler_page.hane_adı_yaz("test_hanesi")
     haneler_page.hane_ekle_butonuna_bas
     hane_dogrulama_yazisi = haneler_page.hane_basariyla_olusturuldu_yazisini_dogrula
@@ -77,10 +80,12 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
     hane_bilgileri_dogrulama_yazisi = haneler_page.hane_bilgileriniz_basariyla_olusturuldu_yazisini_dogrula
 
     expect(hane_bilgileri_dogrulama_yazisi).to eq("Hane bilgileriniz başarıyla güncellendi")
-
+    
     haneler_page.haneneyi_sil_butonuna_tikla
     haneler_page.evet_haneyi_sil_dialog_butonuna_bas
     hane = haneler_page.hane_adinin_gorunmedigi_dogrula
-    expect(hane.empty?).to be true
+    expect(hane).to be true
+    
+    sleep 5
   end
 end

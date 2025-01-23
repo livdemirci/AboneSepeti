@@ -4,25 +4,25 @@ class AboneliklerPage
   include TestHelper
 
   # Locators
-  ABONELIKLER_BUTTON = { id: 'com.abonesepeti.app:id/home_fragment_container' }
-  ABONELIK_EKLE_BUTTON = { id: 'com.abonesepeti.app:id/txt_header_button' }
+  ABONELIKLER_BUTTON = { id: 'com.abonesepeti.app.test:id/home_fragment_container' }
+  ABONELIK_EKLE_BUTTON = { id: 'com.abonesepeti.app.test:id/txt_header_button' }
   KURUM_ARA_INPUT = { uiautomator: 'new UiSelector().text("Kurum ara")' }
   ADANA_SU_TEXT = { uiautomator: 'new UiSelector().text("ADANA SU")' }
-  ABONE_NUMARASI_INPUT = { id: 'com.abonesepeti.app:id/service_number' }
-  ABONE_ADI_INPUT = { id: 'com.abonesepeti.app:id/edt_alias' }
-  BASLANGIC_TARIHI_BUTTON = { id: 'com.abonesepeti.app:id/text_input_end_icon' }
+  ABONE_NUMARASI_INPUT = { id: 'com.abonesepeti.app.test:id/service_number' }
+  ABONE_ADI_INPUT = { id: 'com.abonesepeti.app.test:id/edt_alias' }
+  BASLANGIC_TARIHI_BUTTON = { id: 'com.abonesepeti.app.test:id/text_input_end_icon' }
   OK_BUTTON = { uiautomator: 'new UiSelector().text("OK")' }
-  HANELERIM_BUTTON = { id: 'com.abonesepeti.app:id/txt_household_name' }
-  SEC_BUTTON = { id: 'com.abonesepeti.app:id/btn_select' }
-  KISI_CONTAINER = { id: 'com.abonesepeti.app:id/member_container' }
-  DEVAM_ET_BUTTON = { id: 'com.abonesepeti.app:id/btn_subscribe_member_to_platform' }
-  GERI_BUTTON = { uiautomator: 'new UiSelector().resourceId("com.abonesepeti.app:id/btn_back")' }
+  HANELERIM_BUTTON = { id: 'com.abonesepeti.app.test:id/txt_household_name' }
+  KISI_CONTAINER = { id: 'com.abonesepeti.app.test:id/member_container' }
+  DEVAM_ET_BUTTON = { id: 'com.abonesepeti.app.test:id/btn_subscribe_member_to_platform' }
+  GERI_BUTTON = { uiautomator: 'new UiSelector().resourceId("com.abonesepeti.app.test:id/btn_back")' }
   SU_ABONELIKLERI_BUTTON = { uiautomator: 'new UiSelector().text("Su")' }
   EVIM_SU_TEXT = { uiautomator: 'new UiSelector().text("Evim_Su")' }
   ABONELIGI_SIL_BUTTON = { uiautomator: 'new UiSelector().text("Sil")' }
-  NEGATIF_DIALOG_BUTTON = { id: 'com.abonesepeti.app:id/btn_negative_custom_dialog' }
+  NEGATIF_DIALOG_BUTTON = { id: 'com.abonesepeti.app.test:id/btn_negative_custom_dialog' }
   TOAST_MESSAGE = { xpath: "//*[contains(@text, 'Abonelik başarılı bir şekilde oluşturuldu.')]" }
-  FIKIRLERINIZI_MERAK_EDIYORUZ_HAYIR_BUTTON = { id: 'com.abonesepeti.app:id/noThanksTextView' }
+  FIKIRLERINIZI_MERAK_EDIYORUZ_HAYIR_BUTTON = { id: 'com.abonesepeti.app.test:id/noThanksTextView' }
+  SEC_BUTTON = { id: 'com.abonesepeti.app.test:id/btn_select' }
 
   # Page Methods
   def abonelikler_sayfasina_tikla
@@ -99,6 +99,7 @@ class AboneliklerPage
     sleep 0.5
 
     sec_button = nil
+   
     try_for(9, 3) do
       sec_button = driver.find_element(SEC_BUTTON)
     end
@@ -106,7 +107,9 @@ class AboneliklerPage
   end
 
   def devam_et_ve_baska_ekle_butonuna_tikla
-    driver.find_element(DEVAM_ET_BUTTON).click
+    try_for(9, 3) do
+      driver.find_element(DEVAM_ET_BUTTON).click
+    end
   end
 
   def geri_butonuna_tikla
@@ -160,7 +163,7 @@ class AboneliklerPage
 
   def toast_mesajini_bul(mesaj)
     toast_message = nil
-    try_for(10, 0.1) do
+    try_for(10, 0.01) do
       toast_message = @driver.find_elements(:xpath, "//android.widget.Toast[contains(@text, '#{mesaj}')]").first
     end
     toast_message
@@ -196,7 +199,7 @@ class AboneliklerPage
 
   def toast_mesajı_bekle
     text = nil
-    try_for(10, 0.2) do
+    try_for(10, 0.01) do
       text = driver.find_element(:xpath, "//*[contains(@text, 'Abonelik başarılı bir şekilde silindi.')]").text
     end
     text
