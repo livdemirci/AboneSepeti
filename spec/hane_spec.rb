@@ -86,6 +86,6 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
     hane = haneler_page.hane_adinin_gorunmedigi_dogrula
     expect(hane).to be true
     
-    sleep 5
+    sleep 4
   end
 end
