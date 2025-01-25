@@ -1,24 +1,38 @@
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
 }
 
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-th {
-    background-color: #f2f2f2;
+h1, h2 {
     color: #333;
 }
 
-tr:hover {
-    background-color: #f1f1f1;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
 }
 
-tr td:nth-child(1) {
-    font-weight: bold;
+th, td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+.passed {
+    background-color: #d4edda;
+}
+
+.failed {
+    background-color: #f8d7da;
+}
+
+.summary {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
 }

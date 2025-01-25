@@ -26,7 +26,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
   include AgilewayUtils
 
   before(:all) do
-    BaseConfig.device_type = 'xiaomi'
+    BaseConfig.device_type = 'emulator'
     BaseConfig.environment = 'preprod'
     @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object

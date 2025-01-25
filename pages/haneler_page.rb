@@ -24,13 +24,17 @@ class HanelerPage
   HANE_ADI_GORUNMUYOR = { uiautomator: 'new UiSelector().text("test_hanesi")' }
 
   def hanelerime_tikla
-    element = driver.find_element(MY_HOMES_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(MY_HOMES_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_ekleye_tikla
-    element = driver.find_element(HANE_EKLE_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_EKLE_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_adı_yaz(hane_adi_gir)
@@ -41,79 +45,110 @@ class HanelerPage
   end
 
   def hane_ekle_butonuna_bas
-    element = driver.find_element(HANE_EKLE_BUTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_EKLE_BUTON)
+      element.click if element
+    end
   end
 
   def hane_basariyla_olusturuldu_yazisini_dogrula
-    element = driver.find_element(HANE_BASARIYLA_OLUSTURULDU_TOAST)
+    element = nil
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_BASARIYLA_OLUSTURULDU_TOAST)
+    end
     element.text
   end
 
   def hane_bilgileriniz_basariyla_olusturuldu_yazisini_dogrula
-    element = driver.find_element(HANE_BILGILER_BASARIYLA_OLUSTURULDU_TOAST)
+    element = nil
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_BILGILER_BASARIYLA_OLUSTURULDU_TOAST)
+    end
     element.text
   end
 
   def yeni_haneye_tikla
-    element = driver.find_element(YENI_HANE_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(YENI_HANE_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_il_secimine_tikla
-    element = driver.find_element(HANE_IL_SECIMI_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_IL_SECIMI_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_ili_ara(il = 'kayseri')
-    element = driver.find_element(HANE_IL_ARAMA_INPUT)
-    element.send_keys(il)
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_IL_ARAMA_INPUT)
+      element.send_keys(il)
+    end
   end
 
   def hane_ilini_sec_butonuna_bas
-    element = driver.find_element(HANE_IL_SEC_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_IL_SEC_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_ilcesini_sec_butonuna_tikla
-    element = driver.find_element(HANE_ILCE_SECIMI_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_ILCE_SECIMI_BUTTON)
+      element.click if element
+    end
   end
 
   def hane_ilcesi_ara(ilce = 'melikgazi')
-    element = driver.find_element(HANE_ILCE_ARAMA_INPUT)
-    element.send_keys(ilce)
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_ILCE_ARAMA_INPUT)
+      element.send_keys(ilce)
+    end
   end
 
   def hane_ilcesini_sec_butonuna_bas
-    element = driver.find_element(HANE_ILCE_SEC_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_ILCE_SEC_BUTTON)
+      element.click
+    end
   end
 
   def hane_adresini_gir
-    element = driver.find_element(HANE_ADRESI_INPUT)
-    text = Faker::Address.street_address
-    element.send_keys(text)
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_ADRESI_INPUT)
+      text = Faker::Address.street_address
+      element.send_keys(text)
+    end
   end
 
   def haneyi_kaydet_butonuna_tikla
-    element = driver.find_element(HANE_KAYDET_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_KAYDET_BUTTON)
+      element.click
+    end
   end
 
   def haneneyi_sil_butonuna_tikla
-    element = driver.find_element(HANE_SIL_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_SIL_BUTTON)
+      element.click
+    end
   end
 
   def evet_haneyi_sil_dialog_butonuna_bas
-    element = driver.find_element(HANE_SIL_EVET_BUTTON)
-    element.click
+    try_for(9, 0.1) do
+      element = driver.find_element(HANE_SIL_EVET_BUTTON)
+      element.click
+    end
   end
 
   def hane_adinin_gorunmedigi_dogrula
-    elements = driver.find_elements(HANE_ADI_GORUNMUYOR)
-    elements.empty?
-    
+    try_for(9, 0.1) do
+      elements = driver.find_elements(HANE_ADI_GORUNMUYOR)
+      elements.empty?
+    end
   end
 end

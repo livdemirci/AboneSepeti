@@ -28,13 +28,14 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
 
   before(:all) do
     BaseConfig.environment = 'preprod'
-    BaseConfig.device_type = 'xiaomi'
+    BaseConfig.device_type = 'emulator'
     @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
   end
 
   after(:all) do
     @driver.quit if @driver
+    
   end
 
   it 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli' do
@@ -77,6 +78,7 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
     haneler_page.hane_ilcesini_sec_butonuna_bas
     haneler_page.hane_adresini_gir
     haneler_page.haneyi_kaydet_butonuna_tikla
+    
     hane_bilgileri_dogrulama_yazisi = haneler_page.hane_bilgileriniz_basariyla_olusturuldu_yazisini_dogrula
 
     expect(hane_bilgileri_dogrulama_yazisi).to eq("Hane bilgileriniz başarıyla güncellendi")

@@ -1,177 +1,57 @@
-# You need Ruby (Rake, RWebSpec, ci_reporter gems installed)
-#   Simplest way on Windows is to install RubyShell (http://agileway.com.au/downloads)
-
 require 'rubygems'
 gem 'ci_reporter'
 gem 'rspec'
 require 'rspec/core/rake_task'
-require 'ci/reporter/rake/rspec' # use this if you're using RSpec
+require 'ci/reporter/rake/rspec' # RSpec için CI raporları
+require 'parallel'
+require 'yaml'
+require 'appium_lib'
+require 'nokogiri'
+require 'fileutils'
 
-load File.join(File.dirname(__FILE__), 'buildwise.rake')
-
-## Settings: Customize here...
-#
+# BuildWise ayarları (isteğe bağlı)
 BUILDWISE_URL = ENV['BUILDWISE_MASTER'] || 'http://buildwise.dev'
-# BUILDWISE_QUICK_PROJECT_ID = "agiletravel-quick-build-rspec"
-# BUILDWISE_FULL_PROJECT_ID  = "agiletravel-full-build-rspec" # import to set for full build
+FULL_BUILD_MAX_TIME = ENV['DISTRIBUTED_MAX_BUILD_TIME'].to_i || 60 * 60 # maksimum build süresi
+FULL_BUILD_CHECK_INTERVAL = ENV['DISTRIBUTED_BUILD_CHECK_INTERVAL'].to_i || 20 # kontrol aralığı
 
-FULL_BUILD_MAX_TIME = ENV['DISTRIBUTED_MAX_BUILD_TIME'].to_i || 60 * 60 # max build time, over this, time out
-FULL_BUILD_CHECK_INTERVAL = ENV['DISTRIBUTED_BUILD_CHECK_INTERVAL'].to_i || 20 # check interval for build complete
+# Test dizini
+$test_dir = File.expand_path(File.join(File.dirname(__FILE__), 'spec'))
 
-$test_dir = File.expand_path(File.join(File.dirname(__FILE__), 'spec')) # change to aboslution path if invocation is not this directory
-# rspec will create 'spec/reports' under check out dir
-
-# List tests you want to exclude
-#
+# Hariç tutulacak test dosyaları
 def excluded_spec_files
-  # NOTE, testing only for faster develping agent, remove a couple of test later
-  ['debugging_spec.rb', '03_passenger_spec.rb']
+  ['debugging_spec.rb', '03_passenger_spec.rb'] # Örnek hariç tutulan dosyalar
 end
 
+# Tüm test dosyalarını bul
 def all_specs
   Dir.glob("#{$test_dir}/*_spec.rb").map { |file| File.basename(file) }
 end
 
+# Hızlı build için test dosyaları
 def specs_for_quick_build
-  all_specs # Tüm _spec.rb dosyalarını döndür
+  all_specs - excluded_spec_files
 end
 
-desc 'run tests in this spec/ folder, option to use INTELLIGENT_ORDERING or/and DYNAMIC_FEEDBACK'
+# UI testlerini çalıştır (hızlı build)
 RSpec::Core::RakeTask.new('ui_tests:quick') do |t|
-  specs_to_be_executed = buildwise_determine_specs_for_quick_build(specs_for_quick_build, excluded_spec_files,
-                                                                   $test_dir)
-  buildwise_formatter =  File.join(File.dirname(__FILE__), 'buildwise_rspec_formatter.rb')
-  t.rspec_opts = "--pattern my_own_custom_order --require #{buildwise_formatter} #{specs_to_be_executed.join(' ')} --order defined"
+  specs_to_be_executed = specs_for_quick_build
+  t.rspec_opts = "--pattern #{specs_to_be_executed.join(' ')} --order defined"
 end
 
-desc 'run quick tests from BuildWise'
-task 'ci:ui_tests:quick' => ['ci:setup:rspec'] do
-  build_id = buildwise_start_build(working_dir: __dir__)
-  buildwise_run_sequential_build_target(build_id, 'ui_tests:quick')
-end
-
-## Full Build
-#
-desc 'Running tests distributedly'
-task 'ci:ui_tests:full' => ['ci:setup:rspec'] do
-  build_id = buildwise_start_build(working_dir: __dir__,
-                                   ui_test_dir: ['spec'],
-                                   excluded: excluded_spec_files || [],
-                                   distributed: true)
-  buildwise_montior_parallel_execution(build_id, max_wait_time: FULL_BUILD_MAX_TIME,
-                                                 check_interval: FULL_BUILD_CHECK_INTERVAL)
-end
-
-desc 'run all tests in this folder'
-RSpec::Core::RakeTask.new('go') do |t|
-  test_files = Dir.glob('*_spec.rb') + Dir.glob('*_test.rb') - excluded_test_files
-  t.pattern = FileList[test_files]
-  t.rspec_opts = '' # to enable warning: "-w"
-end
-
-desc 'Generate stats for UI tests'
-task 'test:stats' do
-  ui_test_dir = File.dirname(__FILE__)
-  STATS_SOURCES = {
-    'Tests' => "#{ui_test_dir}/spec",
-    'Pages' => "#{ui_test_dir}/pages",
-    'Helpers' => "#{ui_test_dir}/*_helper.rb"
-  }
-
-  test_stats = { 'lines' => 0, 'test_suites' => 0, 'test_cases' => 0, 'test_lines' => 0 }
-  page_stats = { 'lines' => 0, 'classes' => 0, 'methods' => 0, 'code_lines' => 0 }
-  helper_stats = { 'lines' => 0, 'helpers' => 0, 'methods' => 0, 'code_lines' => 0 }
-
-  # Tests
-  directory = STATS_SOURCES['Tests']
-  Dir.foreach(directory) do |file_name|
-    next if ['.', '..', 'debugging_spec.rb'].include?(file_name)
-    next if File.directory?(File.join(directory, file_name))
-
-    f = File.open(directory + '/' + file_name)
-    test_stats['test_suites'] += 1
-    while line = f.gets
-      test_stats['lines'] += 1
-      if line =~ /^\s*it\s+['"]/ || line =~ /^\s*story\s+['"]/ || line =~ /^\s*test_case\s+['"]/
-        test_stats['test_cases'] += 1
-      end
-      test_stats['test_lines'] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
-    end
-    f.close
-  end
-  # puts test_stats.inspect
-
-  # Pages
-  directory = STATS_SOURCES['Pages']
-  Dir.foreach(directory) do |file_name|
-    next if ['.', '..'].include?(file_name)
-
-    f = File.open(directory + '/' + file_name)
-    while line = f.gets
-      page_stats['lines'] += 1
-      page_stats['classes'] += 1 if line =~ /class [A-Z]/
-      page_stats['methods'] += 1 if line =~ /def [a-z]/
-      page_stats['code_lines'] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
-    end
-    f.close
-  end
-
-  # Helpers
-  # directory = File.dirname( STATS_SOURCES["Helpers"])
-  # helper_wildcard = File.basename( STATS_SOURCES["Helpers"])
-  # puts directory
-  # puts helper_wildcard
-  Dir.glob(STATS_SOURCES['Helpers']).each do |helper_file|
-    f = File.open(helper_file)
-    helper_stats['helpers'] += 1
-    while line = f.gets
-      helper_stats['lines'] += 1
-      helper_stats['methods'] += 1 if line =~ /def [a-z]/
-      helper_stats['code_lines'] += 1 unless line =~ /^\s*$/ || line =~ /^\s*#/
-    end
-    f.close
-  end
-
-  total_lines = helper_stats['lines'] + page_stats['lines'] + test_stats['lines']
-  total_code_lines = helper_stats['code_lines'] + page_stats['code_lines'] + test_stats['test_lines']
-
-  puts '+------------+---------+---------+---------+--------+'
-  puts '| TEST       |   LINES |  SUITES |   CASES |    LOC |'
-  puts "|            | #{test_stats['lines'].to_s.rjust(7)} " + "| #{test_stats['test_suites'].to_s.rjust(7)} " + "| #{test_stats['test_cases'].to_s.rjust(7)} " + "| #{test_stats['test_lines'].to_s.rjust(6)} " + '|'
-  puts '+------------+---------+---------+---------+--------+'
-  puts '| PAGE       |   LINES | CLASSES | METHODS |    LOC |'
-  puts "|            | #{page_stats['lines'].to_s.rjust(7)} " + "| #{page_stats['classes'].to_s.rjust(7)} " + "| #{page_stats['methods'].to_s.rjust(7)} " + "| #{page_stats['code_lines'].to_s.rjust(6)} " + '|'
-  puts '+------------+---------+---------+---------+--------+'
-  puts '| HELPER     |   LINES |   COUNT | METHODS |    LOC |'
-  puts "|            | #{helper_stats['lines'].to_s.rjust(7)} " + "| #{helper_stats['helpers'].to_s.rjust(7)} " + "| #{helper_stats['methods'].to_s.rjust(7)} " + "| #{helper_stats['code_lines'].to_s.rjust(6)} " + '|'
-  puts '+------------+---------+---------+---------+--------+'
-  puts '| TOTAL      | ' + total_lines.to_s.rjust(7) + ' |         |         |' + total_code_lines.to_s.rjust(7) + ' |'
-  puts '+------------+---------+---------+---------+--------+'
-end
-
+# Paralel testleri çalıştır
 desc 'Testleri paralel çalıştır'
 task :parallel_tests do
-  require 'parallel'
-  require 'yaml'
-  require_relative 'config/base_config'
-  require 'appium_lib'
-  require 'rspec/core'
-  require 'ci/reporter/rspec'
-  require 'nokogiri'
-  require 'fileutils' # FileUtils modülünü ekliyoruz
-
-  # Ortam seçimini al (varsayılan: preprod)
+  # Ortam seçimi (varsayılan: preprod)
   environment = ENV['ENV'] || 'preprod'
-  BaseConfig.environment = environment
-
   puts "Test ortamı: #{environment}"
 
+  # Rapor dizini oluştur
   timestamp = Time.now.strftime('%Y%m%d_%H%M%S')
   report_dir = "reports/#{timestamp}"
-  FileUtils.rm_rf(report_dir) if File.directory?(report_dir) # Dizini temizle
-  FileUtils.mkdir_p(report_dir) # Yeni dizin oluştur
+  FileUtils.rm_rf(report_dir) if File.directory?(report_dir)
+  FileUtils.mkdir_p(report_dir)
 
-  # Configure RSpec formatters for extended reporting
+  # RSpec formatter'ları ayarla
   ENV['CI_REPORTS'] = report_dir
 
   # Appium yapılandırmasını yükle
@@ -180,7 +60,6 @@ task :parallel_tests do
 
   # Bağlı cihazları al
   connected_devices = `adb devices`.split("\n")[1..-1]&.map { |line| line.split[0] }&.compact || []
-
   if connected_devices.empty?
     puts "Hata: Bağlı cihaz bulunamadı!"
     exit 1
@@ -199,7 +78,6 @@ task :parallel_tests do
 
   # Device type'lara göre uygun cihazları eşle
   device_type_mapping = {}
-
   device_configs.each do |config_name, config|
     if config_name == 'emulator'
       device_type_mapping[config_name] = emulator_devices
@@ -215,21 +93,13 @@ task :parallel_tests do
 
   # Test-cihaz çiftlerini oluştur
   device_test_groups = {}
-
   spec_files.each do |spec_file|
     content = File.read(spec_file)
     if match = content.match(/BaseConfig\.device_type\s*=\s*['"]([^'"]+)['"]/)
       device_type = match[1]
-
       if device_type_mapping[device_type]&.any?
-        # Bu device type için mevcut cihazlardan birini seç
-        available_devices = device_type_mapping[device_type]
-        device = available_devices.first
-
-        device_test_groups[device] ||= {
-          device_type: device_type,
-          tests: []
-        }
+        device = device_type_mapping[device_type].first
+        device_test_groups[device] ||= { device_type: device_type, tests: [] }
         device_test_groups[device][:tests] << spec_file
       else
         puts "Uyarı: '#{device_type}' tipi için uygun cihaz bulunamadı: #{File.basename(spec_file)}"
@@ -252,19 +122,22 @@ task :parallel_tests do
     end
   end
 
+  # Test sonuçlarını toplamak için bir hash oluştur
+  test_results = {
+    total_tests: 0,
+    passed_tests: 0,
+    failed_tests: 0,
+    screenshots: []
+  }
+
   # Her cihaz için bir Appium server başlat
   begin
     device_servers = {}
-
     device_test_groups.each_with_index do |(device, group), index|
       port = 4723 + index
       puts "\n[Device: #{device} (#{group[:device_type]})] Appium server başlatılıyor (Port: #{port})"
-
-      # Appium server'ı başlat
-      server_cmd = "appium -p #{port} --allow-insecure chromedriver_autodownload > appium_#{port}.log 2>&1 &"
-      system(server_cmd)
+      system("appium -p #{port} --allow-insecure chromedriver_autodownload > appium_#{port}.log 2>&1 &")
       sleep 15 # Server'ın başlaması için bekle
-
       device_servers[device] = port
       puts "[Device: #{device} (#{group[:device_type]})] Appium server hazır"
     end
@@ -289,20 +162,34 @@ task :parallel_tests do
         sleep 2
 
         # Rapor dosyasını her test çalıştırması için benzersiz hale getirmek
-        group_name = "#{spec_name}_#{ENV['UDID']}_#{timestamp}" # Test adı, cihaz ID'si ve zaman damgasını birleştir
+        group_name = "#{spec_name}_#{ENV['UDID']}_#{timestamp}"
         ENV['SPEC_OPTS'] = "--format RspecJunitFormatter --out #{report_dir}/test_report_#{group_name}.xml"
 
         # RSpec komutunu çalıştır
-        rspec_cmd = <<~RUBY
-          bundle exec ruby -e '
-            require "rspec"
-            require "appium_lib"
-            # RSpec çalıştır
-            RSpec::Core::Runner.run(["#{spec_file}"], $stderr, $stdout)
-          '
-        RUBY
+        begin
+          system("bundle exec rspec #{spec_file}")
+          test_results[:total_tests] += 1
+          test_results[:passed_tests] += 1
+          puts "[Başarılı] #{spec_name}"
+        rescue => e
+          puts "Hata oluştu: #{e.message}"
+          test_results[:total_tests] += 1
+          test_results[:failed_tests] += 1
+          puts "[Başarısız] #{spec_name}"
 
-        system(rspec_cmd)
+          # Ekran görüntüsü al
+          screenshot_path = File.join(report_dir, "screenshot_#{group_name}.png")
+          driver = Appium::Driver.new(
+            { caps: appium_config[group[:device_type]],
+              appium_lib: { server_url: "http://localhost:#{port}/wd/hub" } }, true
+          )
+          driver.start_driver
+          driver.save_screenshot(screenshot_path)
+          puts "Ekran görüntüsü kaydedildi: #{screenshot_path}"
+          driver.driver_quit
+
+          test_results[:screenshots] << screenshot_path
+        end
       end
     end
   ensure
@@ -315,47 +202,64 @@ task :parallel_tests do
 
     # Raporları birleştir
     puts "\nRaporlar birleştiriliyor..."
-    Rake::Task["merge_reports"].invoke
+    Rake::Task["merge_reports"].invoke(report_dir)
+
+    # Test sonuçlarını özetle
+    puts "\nTest Sonuçları Özeti:"
+    puts "- Toplam Test: #{test_results[:total_tests]}"
+    puts "- Geçen Testler: #{test_results[:passed_tests]}"
+    puts "- Başarısız Testler: #{test_results[:failed_tests]}"
+    puts "- Ekran Görüntüleri:"
+    test_results[:screenshots].each do |screenshot|
+      puts "  - #{screenshot}"
+    end
   end
 end
 
-# Raporları birleştiren görev
-desc 'Merge test reports'
-task :merge_reports do
+# JUnit raporlarını birleştir
+desc 'JUnit raporlarını birleştir'
+task :merge_reports, [:report_dir] do |t, args|
   require 'nokogiri'
 
-  # En son çalışan testlerin dizinini bul
-  latest_report_dir = Dir.glob("reports/*").max_by { |f| File.mtime(f) }
+  report_dir = args[:report_dir]
+  merged_report_path = File.join(report_dir, 'merged_report.xml')
 
-  if !latest_report_dir || !File.directory?(latest_report_dir)
-    puts "Rapor dizini bulunamadı"
-    next
+  # Tüm rapor dosyalarını bul
+  report_files = Dir.glob("#{report_dir}/test_report_*.xml")
+
+  if report_files.empty?
+    puts "Uyarı: Birleştirilecek rapor dosyası bulunamadı!"
+    return
   end
 
-  puts "En son rapor dizini: #{latest_report_dir}"
-
-  # En son dizindeki JUnit dosyalarını bul
-  junit_files = Dir.glob("#{latest_report_dir}/test_report_*.xml")
-
-  if junit_files.empty?
-    puts "Birleştirilecek JUnit rapor bulunamadı"
-    next
-  end
-
-  # İlk dosyayı temel olarak al
-  merged_doc = Nokogiri::XML('<testsuites></testsuites>')
-
-  # Her JUnit dosyasını işle
-  junit_files.each do |file|
-    puts "Rapor birleştiriliyor: #{File.basename(file)}"
-    doc = Nokogiri::XML(File.read(file))
-    merged_doc.root.add_child(doc.root.children)
+  # Birleştirilmiş raporu oluştur
+  merged_report = Nokogiri::XML::Builder.new do |xml|
+    xml.testsuites do
+      report_files.each do |report_file|
+        doc = Nokogiri::XML(File.open(report_file))
+        doc.xpath('//testsuite').each do |testsuite|
+          xml.testsuite(name: testsuite['name'], tests: testsuite['tests'], failures: testsuite['failures'], errors: testsuite['errors'], time: testsuite['time']) do
+            testsuite.xpath('.//testcase').each do |testcase|
+              xml.testcase(name: testcase['name'], classname: testcase['classname'], time: testcase['time']) do
+                testcase.xpath('.//failure').each do |failure|
+                  xml.failure(failure['message'], type: failure['type']) do
+                    xml.text(failure.text)
+                  end
+                end
+                testcase.xpath('.//error').each do |error|
+                  xml.error(error['message'], type: error['type']) do
+                    xml.text(error.text)
+                  end
+                end
+              end
+            end
+          end
+        end
+      end
+    end
   end
 
   # Birleştirilmiş raporu kaydet
-  output_file = "#{latest_report_dir}/merged_report.xml"
-  File.write(output_file, merged_doc.to_xml)
-
-  puts "\nBirleştirme tamamlandı!"
-  puts "Birleştirilmiş rapor: #{output_file}"
+  File.write(merged_report_path, merged_report.to_xml)
+  puts "Raporlar birleştirildi: #{merged_report_path}"
 end
