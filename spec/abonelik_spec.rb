@@ -31,7 +31,6 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     @driver = Appium::Driver.new(BaseConfig.get_caps, true).start_driver
     Appium.promote_appium_methods Object
     puts BaseConfig.get_caps.inspect
-
   end
 
   after(:all) do
@@ -45,20 +44,14 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     login_page = LoginPage.new
     profil_page = ProfilPage.new
     abonelikler_page = AboneliklerPage.new
-    
+
     login_page.giris_sayfasini_bekle
     login_page.giris_yap_click
-
     login_page.sifremi_unuttum_sayfasini_bekle
-
     login_page.e_posta_veya_telefon_numarasini_gir
-
     login_page.varsayılan_sifreyi_gir
-
     login_page.giris_yap_butonuna_tikla
-
     profil_page.surum_yenilik_uyarisini_kapat
-
     login_page.version_uyarisini_kapat
 
     abonelikler_page.abonelikler_click
@@ -77,7 +70,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.ok_button_click
     abonelikler_page.taahhüt_süresi_seç('6 Ay')
     abonelikler_page.hanelerim_butonuna_tikla
-    
+
     abonelikler_page.sec_button_click
     sleep 0.5 # hane seçimi için
     abonelikler_page.kisi_sec_click
@@ -100,7 +93,7 @@ describe 'Kullanici cep telefonunu girip kodu gönderdikten sonra gelen 4 haneli
     abonelikler_page.aboneligi_sil_butonuna_tikla
     abonelikler_page.negatif_dialog_click
     toast_message = abonelikler_page.toast_mesajı_bekle
-   
+
     expect(toast_message).not_to be_nil, 'Toast mesajı bulunamadı!'
     sleep 4
   end

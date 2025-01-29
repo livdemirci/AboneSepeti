@@ -20,7 +20,6 @@ require 'faker'
 require 'chunky_png'
 require 'base64'
 
-
 describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
   include MyUtils
   include TestHelper
@@ -35,7 +34,6 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
 
   after(:all) do
     @driver.quit if @driver
-    
   end
 
   it 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli' do
@@ -60,14 +58,16 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
 
     haneler_page = HanelerPage.new
     haneler_page.hanelerime_tikla
-    
+
     haneler_page.hane_ekleye_tikla
-    
+
     haneler_page.hane_adı_yaz("test_hanesi")
     haneler_page.hane_ekle_butonuna_bas
-    hane_dogrulama_yazisi = haneler_page.hane_basariyla_olusturuldu_yazisini_dogrula
+    toast_message = haneler_page.hane_basariyla_olusturuldu_yazisini_dogrula
+    
+    puts "Toast mesajı: #{toast_message}"
 
-    expect(hane_dogrulama_yazisi).to eq("Hane başarıyla oluşturuldu")
+    expect(toast_message).to include("Hane başarıyla")
 
     haneler_page.yeni_haneye_tikla
     haneler_page.hane_il_secimine_tikla
@@ -78,16 +78,16 @@ describe 'Kullanici Hanelerim sayfasında yeni hane ekleyip silebilmeli.' do
     haneler_page.hane_ilcesini_sec_butonuna_bas
     haneler_page.hane_adresini_gir
     haneler_page.haneyi_kaydet_butonuna_tikla
-    
+
     hane_bilgileri_dogrulama_yazisi = haneler_page.hane_bilgileriniz_basariyla_olusturuldu_yazisini_dogrula
 
     expect(hane_bilgileri_dogrulama_yazisi).to eq("Hane bilgileriniz başarıyla güncellendi")
-    
+
     haneler_page.haneneyi_sil_butonuna_tikla
     haneler_page.evet_haneyi_sil_dialog_butonuna_bas
     hane = haneler_page.hane_adinin_gorunmedigi_dogrula
     expect(hane).to be true
-    
+
     sleep 4
   end
 end

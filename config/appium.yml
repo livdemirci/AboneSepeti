@@ -8,7 +8,7 @@ xiaomi:
       deviceName: "Xiaomi"
       platformVersion: "12"
       udid: "c2a1b4cc"
-      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test2.apk"
+      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test3.apk"
 
 
     appium_lib:
@@ -44,7 +44,7 @@ emulator:
       autoGrantPermissions: true
       grantPermissions: true
       permissions: '{"com.abonesepeti.app": {"android.permission.POST_NOTIFICATIONS": "granted"}}'
-      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test2.apk"
+      app: "/home/livde/AboneSepeti/config/apk/abonesepeti-2.1.0-test3.apk"
     appium_lib:
       server_url: "http://0.0.0.0:4723"
       wait_timeout: 15

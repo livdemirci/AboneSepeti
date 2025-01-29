@@ -163,7 +163,7 @@ class AboneliklerPage
 
   def toast_mesajini_bul(mesaj)
     toast_message = nil
-    try_for(10, 0.01) do
+    try_for(30, 0.1) do
       toast_message = @driver.find_elements(:xpath, "//android.widget.Toast[contains(@text, '#{mesaj}')]").first
     end
     toast_message

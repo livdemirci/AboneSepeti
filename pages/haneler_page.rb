@@ -8,7 +8,7 @@ class HanelerPage
   HANE_EKLE_BUTTON = { uiautomator: 'new UiSelector().text("Yeni Hane Ekle")' }
   HANE_ADI_INPUT = { uiautomator: 'new UiSelector().text("Hane Adı")' }
   HANE_EKLE_BUTON = { id: 'com.abonesepeti.app.test:id/btn_create_household_dialog_add_new_house_hold' }
-  HANE_BASARIYLA_OLUSTURULDU_TOAST = { xpath: '//android.widget.Toast[@text="Hane başarıyla oluşturuldu"]' }
+  HANE_BASARIYLA_OLUSTURULDU_TOAST = { xpath: "//android.widget.Toast[@text='Hane başarıyla oluşturuldu.']" }
   HANE_BILGILER_BASARIYLA_OLUSTURULDU_TOAST = { xpath: '//android.widget.Toast[@text="Hane bilgileriniz başarıyla güncellendi"]' }
   YENI_HANE_BUTTON = { uiautomator: 'new UiSelector().text("test_hanesi")' }
   HANE_IL_SECIMI_BUTTON = { id: 'com.abonesepeti.app.test:id/edt_selected_city' }
@@ -52,11 +52,11 @@ class HanelerPage
   end
 
   def hane_basariyla_olusturuldu_yazisini_dogrula
-    element = nil
+    toast_message = nil
     try_for(9, 0.1) do
-      element = driver.find_element(HANE_BASARIYLA_OLUSTURULDU_TOAST)
+      toast_message = driver.find_element(HANE_BASARIYLA_OLUSTURULDU_TOAST).text
     end
-    element.text
+    toast_message
   end
 
   def hane_bilgileriniz_basariyla_olusturuldu_yazisini_dogrula
